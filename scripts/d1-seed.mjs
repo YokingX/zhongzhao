@@ -68,8 +68,21 @@ function main() {
   fs.writeFileSync(seedSqlPath, generateSeedSql(schools), "utf-8");
 
   const remote = process.argv.includes("--remote");
+  if (remote && process.env.D1_REMOTE_CONFIRM !== "1") {
+    console.error(
+      "拒绝写入远程 D1：这是生产数据库。\n" +
+        "若确认操作，请设置环境变量 D1_REMOTE_CONFIRM=1 后重试。\n" +
+        "示例: D1_REMOTE_CONFIRM=1 npm run d1:seed:remote"
+    );
+    process.exit(1);
+  }
   const target = remote ? "--remote" : "--local";
 
+  console.log(
+    remote
+      ? "⚠️  目标：远程 D1（生产 zhongzhao-db）"
+      : "📦 目标：本地 D1（测试，.wrangler/state/）"
+  );
   console.log(`生成种子 SQL: ${schools.length} 所学校 → ${seedSqlPath}`);
 
   const migrate = spawnSync(
@@ -86,7 +99,7 @@ function main() {
   );
   if (seed.status !== 0) process.exit(seed.status || 1);
 
-  console.log(`D1 种子数据已导入 (${remote ? "远程" : "本地"})`);
+  console.log(`D1 种子数据已导入 (${remote ? "远程 · 生产" : "本地 · 测试"})`);
 }
 
 main();

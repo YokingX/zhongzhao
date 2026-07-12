@@ -1,3 +1,12 @@
+/**
+ * 学校数据访问层
+ *
+ * 运行时：D1 为唯一数据源
+ *   - 本地开发（npm run dev）→ 本地 D1（wrangler --local）
+ *   - 线上 Worker → 远程 D1（生产）
+ *
+ * 构建时：schools.json 仅用于 SSG 静态路径生成（与 D1 种子同源）
+ */
 import { School, AdmissionBatch } from "@/types/school";
 import schoolsData from "@/data/schools.json";
 import { formatScore, getLatestScore } from "@/lib/school-utils";
@@ -6,6 +15,7 @@ import { matchesSchoolQuery } from "@/lib/pinyin";
 export { formatScore, getLatestScore };
 
 let schoolsCache: School[] | null = null;
+let jsonFallbackWarned = false;
 
 async function loadSchoolsFromD1(): Promise<School[] | null> {
   try {
@@ -20,7 +30,14 @@ async function loadSchoolsFromD1(): Promise<School[] | null> {
   }
 }
 
+/** 构建阶段 SSG 回退；非 D1 环境的 next dev 也会走此路径 */
 function loadSchoolsFromJson(): School[] {
+  if (!jsonFallbackWarned && process.env.NODE_ENV === "development") {
+    jsonFallbackWarned = true;
+    console.warn(
+      "[zhongzhao] 未连接 D1，使用 schools.json。本地开发请用 npm run dev（本地 D1）而非 dev:next。"
+    );
+  }
   if (!schoolsCache) {
     schoolsCache = schoolsData as School[];
   }

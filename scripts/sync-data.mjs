@@ -47,7 +47,8 @@ fs.writeFileSync(metaPath, JSON.stringify(meta, null, 2), "utf-8");
 const scoreCount = schools.reduce((n, s) => n + (s.scoreLines?.length || 0), 0);
 
 console.log(`\n同步完成: ${schools.length} 所学校, ${withScores} 所有分数线`);
-console.log(`本地 D1 已更新（wrangler --local）`);
+console.log(`本地 D1（测试）已更新 → .wrangler/state/`);
 console.log(`  分数线记录: ${scoreCount} 条`);
+console.log(`  远程生产 D1 请用: D1_REMOTE_CONFIRM=1 npm run d1:seed:remote`);
 console.log(`  开始: ${startedAt}`);
 console.log(`  结束: ${finishedAt}`);

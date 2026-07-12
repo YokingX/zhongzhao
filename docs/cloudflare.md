@@ -2,43 +2,31 @@
 
 ## 架构
 
-```
-Cron Worker (zhongzhao-sync)  ──定时抓取──▶  D1 数据库 (zhongzhao-db)
-                                              ▲
-Next.js (zhongzhao-web)      ──读取数据──────┘
+D1（`zhongzhao-db`）是唯一数据库：
 
-本地开发：sync:data → 本地 D1（wrangler --local）；next dev 使用 schools.json 回退
+| 实例 | 命令标志 | 用途 |
+|------|----------|------|
+| 本地 D1 | `--local` | 开发、测试（`.wrangler/state/`） |
+| 远程 D1 | `--remote` | 生产（线上 Worker 绑定） |
+
+```
+Cron Worker (zhongzhao-sync)  ──抓取──▶  远程 D1（生产）
+                                              ▲
+Next.js (zhongzhao-web)       ──读取──────────┘
+
+本地：sync:data / d1:seed → 本地 D1 → npm run dev（preview）
 ```
 
 ## 首次设置
 
-### 1. 创建 D1 数据库
-
 ```bash
-npx wrangler d1 create zhongzhao-db
-```
-
-将返回的 `database_id` 填入 `wrangler.jsonc` 和 `wrangler.sync.jsonc` 中的 `database_id` 字段。
-
-### 2. 设置密钥
-
-```bash
+npx wrangler d1 create zhongzhao-db   # 已完成可跳过
 npx wrangler secret put CRON_SECRET -c wrangler.sync.jsonc
-```
 
-### 3. 同步并导入数据
+npm run d1:migrate      # 本地 D1 表结构
+npm run sync:data       # 抓取 + 写入本地 D1
+npm run d1:seed:remote  # 可选：初始化远程 D1
 
-```bash
-# 抓取 + 生成 JSON + 导入本地 D1
-npm run sync:data
-
-# 导入到远程 D1（生产）
-npm run d1:seed:remote
-```
-
-### 4. 部署
-
-```bash
 npm run cf:sync:deploy
 npm run deploy
 ```
@@ -46,45 +34,38 @@ npm run deploy
 ## 本地开发
 
 ```bash
-# 网站（JSON 回退，无需 D1 绑定）
-npm run dev
-
-# 查看本地 D1 统计
-npm run d1:stats
-
-# 测试 Sync Worker + 本地 D1
-npm run cf:sync:dev
-curl -H "Authorization: Bearer $CRON_SECRET" http://localhost:8787/sync
+npm run sync:data    # 填充本地 D1
+npm run dev          # preview，绑定本地 D1
+npm run d1:stats     # 本地 D1：学校数 / 分数线数
 ```
 
-## 定时任务
+`npm run dev:next` 仅用于纯 UI 调试（读 `schools.json`，不连 D1）。
 
-Cloudflare Workers 使用 **5 字段** Cron（全部为 **UTC**）：
-
-| 表达式 | UTC 时间 | 北京时间 | 说明 |
-|--------|----------|----------|------|
-| `0 19 * * SUN` | 每周日 19:00 | 每周一 03:00 | 常规周同步 |
-| `0 19 * 6,7,8 *` | 6–8 月每天 19:00 | 次日 03:00 | 中招季每日同步 |
-
-配置位于 `wrangler.sync.jsonc` 的 `triggers.crons`。
-
-手动触发同步：
+## 生产数据维护
 
 ```bash
+# 增量：Cron Worker 定时抓取分数线写入远程 D1
 curl -H "Authorization: Bearer $CRON_SECRET" https://zhongzhao-sync.zhaixiuchen.workers.dev/sync
 
-# 健康检查（含最近一次同步）
-curl https://zhongzhao-sync.zhaixiuchen.workers.dev/health
+# 全量：从 schools.json 刷新远程 D1（需 D1_REMOTE_CONFIRM=1，脚本已内置）
+npm run d1:seed:remote
 
-# 同步日志
-curl https://zhongzhao-sync.zhaixiuchen.workers.dev/logs?limit=5
+# 查看远程 D1 统计
+npm run d1:stats:remote
 ```
+
+## 定时任务（UTC）
+
+| 表达式 | 北京时间 | 说明 |
+|--------|----------|------|
+| `0 19 * * SUN` | 周一 03:00 | 周同步 |
+| `0 19 * 6,7,8 *` | 次日 03:00 | 中招季每日 |
 
 ## 线上地址
 
 | 服务 | URL |
 |------|-----|
 | 网站 | https://zhongzhao-web.zhaixiuchen.workers.dev |
-| 同步 Worker | https://zhongzhao-sync.zhaixiuchen.workers.dev |
+| Sync Worker | https://zhongzhao-sync.zhaixiuchen.workers.dev |
 | 健康检查 | https://zhongzhao-sync.zhaixiuchen.workers.dev/health |
 | 同步日志 | https://zhongzhao-sync.zhaixiuchen.workers.dev/logs |
