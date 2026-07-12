@@ -1,0 +1,365 @@
+[
+  {
+    "id": "rdfz",
+    "name": "中国人民大学附属中学",
+    "shortName": "人大附中",
+    "district": "海淀",
+    "type": "示范",
+    "address": "北京市海淀区中关村大街37号",
+    "website": "https://www.rdfz.cn",
+    "description": "北京市顶尖示范高中，以理科见长，竞赛成绩突出，每年向清华北大输送大量优秀学子。",
+    "features": ["理科强校", "竞赛特色", "国际课程", "集团化办学"],
+    "admissionTypes": ["提前招生", "指标分配", "统一招生"],
+    "scoreLines": [
+      { "year": 2025, "batch": "统一招生", "minScore": 648 },
+      { "year": 2024, "batch": "统一招生", "minScore": 645 },
+      { "year": 2023, "batch": "统一招生", "minScore": 642 },
+      { "year": 2022, "batch": "统一招生", "minScore": 640 },
+      { "year": 2025, "batch": "指标分配", "minScore": 635, "note": "校额到校" }
+    ]
+  },
+  {
+    "id": "bhsdfz",
+    "name": "北京师范大学附属实验中学",
+    "shortName": "北师大实验",
+    "district": "西城",
+    "type": "示范",
+    "address": "北京市西城区二龙路14号",
+    "website": "https://www.bhsdfz.com",
+    "description": "西城区顶尖示范高中，文理均衡，素质教育特色鲜明，社团活动丰富。",
+    "features": ["文理均衡", "素质教育", "社团丰富", "历史悠久"],
+    "admissionTypes": ["提前招生", "指标分配", "统一招生"],
+    "scoreLines": [
+      { "year": 2025, "batch": "统一招生", "minScore": 645 },
+      { "year": 2024, "batch": "统一招生", "minScore": 642 },
+      { "year": 2023, "batch": "统一招生", "minScore": 640 },
+      { "year": 2022, "batch": "统一招生", "minScore": 638 },
+      { "year": 2025, "batch": "指标分配", "minScore": 630, "note": "校额到校" }
+    ]
+  },
+  {
+    "id": "sdsdfz",
+    "name": "首都师范大学附属中学",
+    "shortName": "首师大附中",
+    "district": "海淀",
+    "type": "示范",
+    "address": "北京市海淀区阜成路43号",
+    "website": "https://www.sdsdfz.com.cn",
+    "description": "海淀区知名示范高中，以人文社科见长，校园环境优美，师资力量雄厚。",
+    "features": ["人文特色", "校园优美", "师资雄厚", "集团办学"],
+    "admissionTypes": ["指标分配", "统一招生"],
+    "scoreLines": [
+      { "year": 2025, "batch": "统一招生", "minScore": 638 },
+      { "year": 2024, "batch": "统一招生", "minScore": 635 },
+      { "year": 2023, "batch": "统一招生", "minScore": 632 },
+      { "year": 2022, "batch": "统一招生", "minScore": 630 },
+      { "year": 2025, "batch": "指标分配", "minScore": 620, "note": "校额到校" }
+    ]
+  },
+  {
+    "id": "bdfz",
+    "name": "北京大学附属中学",
+    "shortName": "北大附中",
+    "district": "海淀",
+    "type": "示范",
+    "address": "北京市海淀区大泥湾路29号",
+    "website": "https://www.pkuschool.edu.cn",
+    "description": "以创新教育著称的示范高中，实行学院制管理，注重学生自主发展和创新能力培养。",
+    "features": ["创新教育", "学院制", "自主招生", "国际视野"],
+    "admissionTypes": ["提前招生", "指标分配", "统一招生"],
+    "scoreLines": [
+      { "year": 2025, "batch": "统一招生", "minScore": 642 },
+      { "year": 2024, "batch": "统一招生", "minScore": 638 },
+      { "year": 2023, "batch": "统一招生", "minScore": 635 },
+      { "year": 2022, "batch": "统一招生", "minScore": 633 },
+      { "year": 2025, "batch": "指标分配", "minScore": 625, "note": "校额到校" }
+    ]
+  },
+  {
+    "id": "tsdfz",
+    "name": "清华大学附属中学",
+    "shortName": "清华附中",
+    "district": "海淀",
+    "type": "示范",
+    "address": "北京市海淀区中关村北大街82号",
+    "website": "https://www.qhfz.edu.cn",
+    "description": "海淀区顶尖示范高中，理科竞赛全国领先，与清华大学联系紧密。",
+    "features": ["理科竞赛", "清华资源", "科技创新", "体育特长"],
+    "admissionTypes": ["提前招生", "指标分配", "统一招生"],
+    "scoreLines": [
+      { "year": 2025, "batch": "统一招生", "minScore": 646 },
+      { "year": 2024, "batch": "统一招生", "minScore": 643 },
+      { "year": 2023, "batch": "统一招生", "minScore": 641 },
+      { "year": 2022, "batch": "统一招生", "minScore": 639 },
+      { "year": 2025, "batch": "指标分配", "minScore": 632, "note": "校额到校" }
+    ]
+  },
+  {
+    "id": "cydfz",
+    "name": "北京市朝阳区外国语学校",
+    "shortName": "朝阳外国语",
+    "district": "朝阳",
+    "type": "示范",
+    "address": "北京市朝阳区安苑北里1号",
+    "description": "朝阳区顶尖示范高中，外语特色鲜明，国际化办学水平较高。",
+    "features": ["外语特色", "国际化", "小班教学", "多元发展"],
+    "admissionTypes": ["指标分配", "统一招生"],
+    "scoreLines": [
+      { "year": 2025, "batch": "统一招生", "minScore": 635 },
+      { "year": 2024, "batch": "统一招生", "minScore": 632 },
+      { "year": 2023, "batch": "统一招生", "minScore": 628 },
+      { "year": 2022, "batch": "统一招生", "minScore": 625 },
+      { "year": 2025, "batch": "指标分配", "minScore": 615, "note": "校额到校" }
+    ]
+  },
+  {
+    "id": "bj4z",
+    "name": "北京市第四中学",
+    "shortName": "北京四中",
+    "district": "西城",
+    "type": "示范",
+    "address": "北京市西城区西黄城根北街甲2号",
+    "website": "https://www.bj4hs.cn",
+    "description": "百年名校，北京市最具影响力的高中之一，以严谨的学风和卓越的升学率著称。",
+    "features": ["百年名校", "学风严谨", "升学率高", "校友众多"],
+    "admissionTypes": ["提前招生", "指标分配", "统一招生"],
+    "scoreLines": [
+      { "year": 2025, "batch": "统一招生", "minScore": 647 },
+      { "year": 2024, "batch": "统一招生", "minScore": 644 },
+      { "year": 2023, "batch": "统一招生", "minScore": 641 },
+      { "year": 2022, "batch": "统一招生", "minScore": 639 },
+      { "year": 2025, "batch": "指标分配", "minScore": 633, "note": "校额到校" }
+    ]
+  },
+  {
+    "id": "bj8z",
+    "name": "北京市第八中学",
+    "shortName": "北京八中",
+    "district": "西城",
+    "type": "示范",
+    "address": "北京市西城区学院小街2号",
+    "description": "西城区知名示范高中，办学历史悠久，注重学生全面发展。",
+    "features": ["历史悠久", "全面发展", "体育艺术", "集团化"],
+    "admissionTypes": ["指标分配", "统一招生"],
+    "scoreLines": [
+      { "year": 2025, "batch": "统一招生", "minScore": 640 },
+      { "year": 2024, "batch": "统一招生", "minScore": 637 },
+      { "year": 2023, "batch": "统一招生", "minScore": 634 },
+      { "year": 2022, "batch": "统一招生", "minScore": 631 },
+      { "year": 2025, "batch": "指标分配", "minScore": 622, "note": "校额到校" }
+    ]
+  },
+  {
+    "id": "bj101z",
+    "name": "北京市第一〇一中学",
+    "shortName": "北京101中",
+    "district": "海淀",
+    "type": "示范",
+    "address": "北京市海淀区颐和园路11号",
+    "description": "位于颐和园旁的示范高中，校园环境全国一流，红色教育传统深厚。",
+    "features": ["校园优美", "红色传统", "理科见长", "寄宿制"],
+    "admissionTypes": ["指标分配", "统一招生"],
+    "scoreLines": [
+      { "year": 2025, "batch": "统一招生", "minScore": 641 },
+      { "year": 2024, "batch": "统一招生", "minScore": 638 },
+      { "year": 2023, "batch": "统一招生", "minScore": 635 },
+      { "year": 2022, "batch": "统一招生", "minScore": 632 },
+      { "year": 2025, "batch": "指标分配", "minScore": 623, "note": "校额到校" }
+    ]
+  },
+  {
+    "id": "bj2z",
+    "name": "北京市第二中学",
+    "shortName": "北京二中",
+    "district": "东城",
+    "type": "示范",
+    "address": "北京市东城区内务部街15号",
+    "description": "东城区顶尖示范高中，位于故宫东侧，人文底蕴深厚，教学质量优异。",
+    "features": ["人文底蕴", "位置优越", "教学质量高", "国际交流"],
+    "admissionTypes": ["指标分配", "统一招生"],
+    "scoreLines": [
+      { "year": 2025, "batch": "统一招生", "minScore": 643 },
+      { "year": 2024, "batch": "统一招生", "minScore": 640 },
+      { "year": 2023, "batch": "统一招生", "minScore": 637 },
+      { "year": 2022, "batch": "统一招生", "minScore": 635 },
+      { "year": 2025, "batch": "指标分配", "minScore": 628, "note": "校额到校" }
+    ]
+  },
+  {
+    "id": "bj5z",
+    "name": "北京市第五中学",
+    "shortName": "北京五中",
+    "district": "东城",
+    "type": "示范",
+    "address": "北京市东城区细管胡同13号",
+    "description": "东城区知名示范高中，办学特色鲜明，注重学生个性化发展。",
+    "features": ["个性化教育", "东城名校", "社团活跃", "艺术特色"],
+    "admissionTypes": ["指标分配", "统一招生"],
+    "scoreLines": [
+      { "year": 2025, "batch": "统一招生", "minScore": 636 },
+      { "year": 2024, "batch": "统一招生", "minScore": 633 },
+      { "year": 2023, "batch": "统一招生", "minScore": 630 },
+      { "year": 2022, "batch": "统一招生", "minScore": 627 },
+      { "year": 2025, "batch": "指标分配", "minScore": 618, "note": "校额到校" }
+    ]
+  },
+  {
+    "id": "hdfz",
+    "name": "北京市海淀区教师进修学校附属实验学校",
+    "shortName": "海淀进修实验",
+    "district": "海淀",
+    "type": "示范",
+    "address": "北京市海淀区北四环中路68号",
+    "description": "海淀区优质示范高中，依托区教师进修学校资源，教学研究氛围浓厚。",
+    "features": ["教研优势", "师资培训", "教学质量", "区重点"],
+    "admissionTypes": ["指标分配", "统一招生"],
+    "scoreLines": [
+      { "year": 2025, "batch": "统一招生", "minScore": 628 },
+      { "year": 2024, "batch": "统一招生", "minScore": 625 },
+      { "year": 2023, "batch": "统一招生", "minScore": 622 },
+      { "year": 2022, "batch": "统一招生", "minScore": 618 },
+      { "year": 2025, "batch": "指标分配", "minScore": 610, "note": "校额到校" }
+    ]
+  },
+  {
+    "id": "bj171z",
+    "name": "北京市第一七一中学",
+    "shortName": "北京171中",
+    "district": "东城",
+    "type": "示范",
+    "address": "北京市东城区和平里东街11号",
+    "description": "东城区优质示范高中，办学稳定，升学率保持在较高水平。",
+    "features": ["办学稳定", "升学率高", "区重点", "寄宿可选"],
+    "admissionTypes": ["指标分配", "统一招生"],
+    "scoreLines": [
+      { "year": 2025, "batch": "统一招生", "minScore": 630 },
+      { "year": 2024, "batch": "统一招生", "minScore": 627 },
+      { "year": 2023, "batch": "统一招生", "minScore": 624 },
+      { "year": 2022, "batch": "统一招生", "minScore": 620 },
+      { "year": 2025, "batch": "指标分配", "minScore": 612, "note": "校额到校" }
+    ]
+  },
+  {
+    "id": "bj12z",
+    "name": "北京市第十二中学",
+    "shortName": "北京十二中",
+    "district": "丰台",
+    "type": "示范",
+    "address": "北京市丰台区益泽路15号",
+    "description": "丰台区顶尖示范高中，丰台区的龙头学校，近年来教学质量持续提升。",
+    "features": ["丰台龙头", "持续提升", "寄宿制", "科技特色"],
+    "admissionTypes": ["指标分配", "统一招生"],
+    "scoreLines": [
+      { "year": 2025, "batch": "统一招生", "minScore": 625 },
+      { "year": 2024, "batch": "统一招生", "minScore": 622 },
+      { "year": 2023, "batch": "统一招生", "minScore": 618 },
+      { "year": 2022, "batch": "统一招生", "minScore": 615 },
+      { "year": 2025, "batch": "指标分配", "minScore": 605, "note": "校额到校" }
+    ]
+  },
+  {
+    "id": "bjcz",
+    "name": "北京市陈经纶中学",
+    "shortName": "陈经纶中学",
+    "district": "朝阳",
+    "type": "示范",
+    "address": "北京市朝阳区朝阳门外大街38号",
+    "description": "朝阳区知名示范高中，以体育和艺术教育见长，校园文化建设出色。",
+    "features": ["体育艺术", "校园文化", "朝阳名校", "集团办学"],
+    "admissionTypes": ["指标分配", "统一招生"],
+    "scoreLines": [
+      { "year": 2025, "batch": "统一招生", "minScore": 628 },
+      { "year": 2024, "batch": "统一招生", "minScore": 625 },
+      { "year": 2023, "batch": "统一招生", "minScore": 621 },
+      { "year": 2022, "batch": "统一招生", "minScore": 618 },
+      { "year": 2025, "batch": "指标分配", "minScore": 608, "note": "校额到校" }
+    ]
+  },
+  {
+    "id": "rdfz-chaoyang",
+    "name": "人大附中朝阳学校",
+    "shortName": "人大附朝阳",
+    "district": "朝阳",
+    "type": "民办",
+    "address": "北京市朝阳区太阳宫地区",
+    "description": "人大附中教育集团成员校，民办性质，共享人大附中优质教育资源。",
+    "features": ["人大附集团", "民办", "资源共享", "寄宿制"],
+    "admissionTypes": ["统一招生"],
+    "scoreLines": [
+      { "year": 2025, "batch": "统一招生", "minScore": 615 },
+      { "year": 2024, "batch": "统一招生", "minScore": 612 },
+      { "year": 2023, "batch": "统一招生", "minScore": 608 },
+      { "year": 2022, "batch": "统一招生", "minScore": 605 }
+    ]
+  },
+  {
+    "id": "bj80z",
+    "name": "北京市第八十中学",
+    "shortName": "北京80中",
+    "district": "朝阳",
+    "type": "示范",
+    "address": "北京市朝阳区望京北路甲16号",
+    "description": "朝阳区老牌示范高中，国际部享有盛誉，本部教学质量稳定。",
+    "features": ["国际部知名", "朝阳老牌", "多元发展", "望京学区"],
+    "admissionTypes": ["提前招生", "指标分配", "统一招生"],
+    "scoreLines": [
+      { "year": 2025, "batch": "统一招生", "minScore": 632 },
+      { "year": 2024, "batch": "统一招生", "minScore": 629 },
+      { "year": 2023, "batch": "统一招生", "minScore": 626 },
+      { "year": 2022, "batch": "统一招生", "minScore": 622 },
+      { "year": 2025, "batch": "指标分配", "minScore": 614, "note": "校额到校" }
+    ]
+  },
+  {
+    "id": "bj9z",
+    "name": "北京市第九中学",
+    "shortName": "北京九中",
+    "district": "石景山",
+    "type": "示范",
+    "address": "北京市石景山区模式口大街16号",
+    "description": "石景山区龙头示范高中，校园位于首钢园区附近，科技教育特色突出。",
+    "features": ["石景山龙头", "科技教育", "校园宽敞", "寄宿制"],
+    "admissionTypes": ["指标分配", "统一招生"],
+    "scoreLines": [
+      { "year": 2025, "batch": "统一招生", "minScore": 618 },
+      { "year": 2024, "batch": "统一招生", "minScore": 615 },
+      { "year": 2023, "batch": "统一招生", "minScore": 610 },
+      { "year": 2022, "batch": "统一招生", "minScore": 606 },
+      { "year": 2025, "batch": "指标分配", "minScore": 598, "note": "校额到校" }
+    ]
+  },
+  {
+    "id": "bjdaxing",
+    "name": "北京市大兴区第一中学",
+    "shortName": "大兴一中",
+    "district": "大兴",
+    "type": "示范",
+    "address": "北京市大兴区兴政街",
+    "description": "大兴区顶尖示范高中，随着大兴区发展，学校硬件设施和教学质量不断提升。",
+    "features": ["大兴龙头", "硬件先进", "持续提升", "区重点"],
+    "admissionTypes": ["指标分配", "统一招生"],
+    "scoreLines": [
+      { "year": 2025, "batch": "统一招生", "minScore": 610 },
+      { "year": 2024, "batch": "统一招生", "minScore": 606 },
+      { "year": 2023, "batch": "统一招生", "minScore": 602 },
+      { "year": 2022, "batch": "统一招生", "minScore": 598 },
+      { "year": 2025, "batch": "指标分配", "minScore": 590, "note": "校额到校" }
+    ]
+  },
+  {
+    "id": "rdfz-guantong",
+    "name": "人大附中通州校区（贯通项目）",
+    "shortName": "人大附通州",
+    "district": "通州",
+    "type": "贯通",
+    "address": "北京市通州区潞城镇",
+    "description": "人大附中在通州设立的贯通培养项目，面向全市招生，提供7年一贯制培养。",
+    "features": ["贯通培养", "7年一贯", "人大附品牌", "通州校区"],
+    "admissionTypes": ["提前招生"],
+    "scoreLines": [
+      { "year": 2025, "batch": "提前招生", "minScore": 580, "note": "贯通项目" },
+      { "year": 2024, "batch": "提前招生", "minScore": 575, "note": "贯通项目" },
+      { "year": 2023, "batch": "提前招生", "minScore": 570, "note": "贯通项目" }
+    ]
+  }
+]

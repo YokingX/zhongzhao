@@ -1,0 +1,72 @@
+[
+  {
+    "id": "sports-exam",
+    "date": "2026-04-15",
+    "title": "体育现场考试",
+    "description": "中考体育现场考试，含过程性考核和现场测试两部分。",
+    "category": "考试"
+  },
+  {
+    "id": "zhongkao",
+    "date": "2026-06-24",
+    "title": "中考文化课考试",
+    "description": "2026年北京市高级中等学校招生考试，为期两天。",
+    "category": "考试"
+  },
+  {
+    "id": "score-release",
+    "date": "2026-07-09",
+    "title": "成绩公布",
+    "description": "中考成绩公布，考生可查询总分及各科成绩。",
+    "category": "其他"
+  },
+  {
+    "id": "special-test",
+    "date": "2026-07-10",
+    "title": "专业加试",
+    "description": "艺术、体育等特长生专业加试时间。",
+    "category": "考试"
+  },
+  {
+    "id": "volunteer-fill",
+    "date": "2026-07-13",
+    "title": "志愿填报开始",
+    "description": "7月13日8:30起，考生登录北京教育考试院网站填报志愿。",
+    "category": "志愿"
+  },
+  {
+    "id": "volunteer-deadline",
+    "date": "2026-07-17",
+    "title": "志愿填报截止",
+    "description": "7月17日17:00志愿填报系统关闭，之后不可修改。",
+    "category": "志愿"
+  },
+  {
+    "id": "early-admission",
+    "date": "2026-07-18",
+    "title": "提前招生录取",
+    "description": "贯通项目提前招生、特长生等提前批次录取开始。",
+    "category": "录取"
+  },
+  {
+    "id": "quota-admission",
+    "date": "2026-07-20",
+    "title": "指标分配招生录取",
+    "description": "校额到校和市级统筹招生录取，在提前招生之后进行。",
+    "category": "录取"
+  },
+  {
+    "id": "unified-admission",
+    "date": "2026-07-22",
+    "title": "统一招生录取",
+    "description": "统一招生批次录取，按考生总分和志愿顺序择优录取。",
+    "category": "录取"
+  },
+  {
+    "id": "supplementary",
+    "date": "2026-07-28",
+    "title": "征集志愿",
+    "description": "统一招生录取结束后，未被录取考生可填报征集志愿。",
+    "category": "志愿"
+  }
+]

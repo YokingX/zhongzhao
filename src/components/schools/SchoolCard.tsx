@@ -1,0 +1,163 @@
+import Link from "next/link";
+import { MapPin, ExternalLink } from "lucide-react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { School } from "@/types/school";
+import { getLatestScore } from "@/lib/schools";
+
+interface SchoolCardProps {
+  school: School;
+}
+
+export function SchoolCard({ school }: SchoolCardProps) {
+  const latestScore = getLatestScore(school);
+
+  return (
+    <Link href={`/schools/${school.id}`}>
+      <Card className="h-full transition-shadow hover:shadow-md">
+        <CardHeader className="pb-3">
+          <div className="flex items-start justify-between gap-2">
+            <CardTitle className="text-base leading-snug">{school.shortName}</CardTitle>
+            <Badge variant="secondary">{school.type}</Badge>
+          </div>
+          <p className="text-sm text-muted-foreground">{school.name}</p>
+        </CardHeader>
+        <CardContent>
+          <div className="mb-3 flex items-center gap-1 text-sm text-muted-foreground">
+            <MapPin className="h-3.5 w-3.5" />
+            {school.district}区
+          </div>
+          <div className="mb-3 flex flex-wrap gap-1">
+            {school.features.slice(0, 3).map((f) => (
+              <Badge key={f} variant="outline" className="text-xs">
+                {f}
+              </Badge>
+            ))}
+          </div>
+          {latestScore && (
+            <div className="text-sm">
+              <span className="text-muted-foreground">{latestScore.year}年统一招生线：</span>
+              <span className="font-semibold text-primary">{latestScore.minScore}分</span>
+            </div>
+          )}
+        </CardContent>
+      </Card>
+    </Link>
+  );
+}
+
+interface SchoolFilterProps {
+  districts: string[];
+  types: string[];
+  currentDistrict?: string;
+  currentType?: string;
+  currentQuery?: string;
+}
+
+export function SchoolFilter({
+  districts,
+  types,
+  currentDistrict,
+  currentType,
+  currentQuery,
+}: SchoolFilterProps) {
+  return (
+    <form className="space-y-4" action="/schools" method="get">
+      <div>
+        <label htmlFor="query" className="mb-1.5 block text-sm font-medium">
+          搜索学校
+        </label>
+        <input
+          id="query"
+          name="query"
+          type="search"
+          defaultValue={currentQuery}
+          placeholder="输入学校名称..."
+          className="flex h-10 w-full rounded-lg border border-input bg-card px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+        />
+      </div>
+      <div className="grid gap-4 sm:grid-cols-2">
+        <div>
+          <label htmlFor="district" className="mb-1.5 block text-sm font-medium">
+            行政区
+          </label>
+          <select
+            id="district"
+            name="district"
+            defaultValue={currentDistrict || "全部"}
+            className="flex h-10 w-full rounded-lg border border-input bg-card px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+          >
+            <option value="全部">全部</option>
+            {districts.map((d) => (
+              <option key={d} value={d}>{d}</option>
+            ))}
+          </select>
+        </div>
+        <div>
+          <label htmlFor="type" className="mb-1.5 block text-sm font-medium">
+            学校类型
+          </label>
+          <select
+            id="type"
+            name="type"
+            defaultValue={currentType || "全部"}
+            className="flex h-10 w-full rounded-lg border border-input bg-card px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+          >
+            <option value="全部">全部</option>
+            {types.map((t) => (
+              <option key={t} value={t}>{t}</option>
+            ))}
+          </select>
+        </div>
+      </div>
+      <button
+        type="submit"
+        className="inline-flex h-10 w-full items-center justify-center rounded-lg bg-primary px-4 text-sm font-medium text-primary-foreground hover:bg-primary/90 sm:w-auto"
+      >
+        筛选
+      </button>
+    </form>
+  );
+}
+
+export function SchoolDetailInfo({ school }: { school: School }) {
+  return (
+    <div className="space-y-6">
+      <div className="flex flex-wrap gap-2">
+        <Badge>{school.type}</Badge>
+        <Badge variant="secondary">{school.district}区</Badge>
+        {school.admissionTypes.map((t) => (
+          <Badge key={t} variant="outline">{t}</Badge>
+        ))}
+      </div>
+
+      <p className="text-muted-foreground leading-relaxed">{school.description}</p>
+
+      <div className="flex flex-wrap gap-2">
+        {school.features.map((f) => (
+          <Badge key={f} variant="accent">{f}</Badge>
+        ))}
+      </div>
+
+      <div className="space-y-2 text-sm">
+        <div className="flex items-start gap-2">
+          <MapPin className="mt-0.5 h-4 w-4 shrink-0 text-muted-foreground" />
+          <span>{school.address}</span>
+        </div>
+        {school.website && (
+          <div className="flex items-center gap-2">
+            <ExternalLink className="h-4 w-4 text-muted-foreground" />
+            <a
+              href={school.website}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-primary hover:underline"
+            >
+              学校官网
+            </a>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
