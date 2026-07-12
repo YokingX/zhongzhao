@@ -4,6 +4,7 @@ import { spawnSync } from "child_process";
 import { fileURLToPath } from "url";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
+const root = path.join(__dirname, "..");
 const WATCH_DIR = __dirname;
 const WATCH_FILES = [
   "score-data.mjs",
@@ -16,16 +17,16 @@ let timer = null;
 
 function sync() {
   console.log(`\n[${new Date().toLocaleTimeString()}] 检测到数据变动，正在重新生成...`);
-  const res = spawnSync(process.execPath, ["scripts/generate-schools.mjs"], {
-    cwd: path.join(__dirname, ".."),
+  const gen = spawnSync(process.execPath, ["scripts/generate-schools.mjs"], {
+    cwd: root,
     stdio: "inherit",
   });
-  if (res.status === 0) {
-    spawnSync(process.execPath, ["scripts/db-import.mjs"], {
-      cwd: path.join(__dirname, ".."),
+  if (gen.status === 0) {
+    spawnSync(process.execPath, ["scripts/d1-seed.mjs"], {
+      cwd: root,
       stdio: "inherit",
     });
-    console.log("数据已更新（JSON + 数据库），刷新浏览器即可看到变化");
+    console.log("数据已更新（JSON + 本地 D1），刷新浏览器即可看到变化");
   }
 }
 

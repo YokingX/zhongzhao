@@ -22,7 +22,7 @@
         "minScore": 485,
         "maxScore": 510,
         "districtRank": 389,
-        "source": "北京中考信息网等网传数据"
+        "source": "自动抓取更新"
       },
       {
         "year": 2024,
@@ -73,7 +73,7 @@
         "minScore": 475,
         "maxScore": 510,
         "districtRank": 1216,
-        "source": "北京中考信息网等网传数据"
+        "source": "自动抓取更新"
       },
       {
         "year": 2024,
@@ -306,7 +306,7 @@
         "minScore": 464,
         "maxScore": 510,
         "districtRank": 2219,
-        "source": "北京中考信息网等网传数据"
+        "source": "自动抓取更新"
       },
       {
         "year": 2024,
@@ -408,7 +408,7 @@
         "minScore": 473,
         "maxScore": 510,
         "districtRank": 1391,
-        "source": "北京中考信息网等网传数据"
+        "source": "自动抓取更新"
       },
       {
         "year": 2024,
@@ -459,7 +459,7 @@
         "minScore": 476,
         "maxScore": 510,
         "districtRank": 1114,
-        "source": "北京中考信息网等网传数据"
+        "source": "自动抓取更新"
       },
       {
         "year": 2024,
@@ -510,7 +510,7 @@
         "minScore": 469,
         "maxScore": 510,
         "districtRank": 1752,
-        "source": "北京中考信息网等网传数据"
+        "source": "自动抓取更新"
       },
       {
         "year": 2024,
@@ -561,7 +561,7 @@
         "minScore": 470,
         "maxScore": 510,
         "districtRank": 1664,
-        "source": "北京中考信息网等网传数据"
+        "source": "自动抓取更新"
       },
       {
         "year": 2024,
@@ -724,6 +724,14 @@
     "isKeySchool": false,
     "scoreLines": [
       {
+        "year": 2025,
+        "batch": "统一招生",
+        "minScore": 409,
+        "maxScore": 510,
+        "districtRank": 5657,
+        "source": "自动抓取更新"
+      },
+      {
         "year": 2024,
         "batch": "统一招生",
         "minScore": 547,
@@ -795,6 +803,14 @@
     ],
     "isKeySchool": false,
     "scoreLines": [
+      {
+        "year": 2025,
+        "batch": "统一招生",
+        "minScore": 426,
+        "maxScore": 510,
+        "districtRank": 5004,
+        "source": "自动抓取更新"
+      },
       {
         "year": 2024,
         "batch": "统一招生",
@@ -966,10 +982,10 @@
       {
         "year": 2025,
         "batch": "统一招生",
-        "minScore": 459,
+        "minScore": 469,
         "maxScore": 510,
-        "districtRank": 2699,
-        "source": "北京中考信息网等网传数据"
+        "districtRank": 1752,
+        "source": "自动抓取更新"
       },
       {
         "year": 2024,
@@ -1025,7 +1041,7 @@
         "minScore": 338,
         "maxScore": 510,
         "districtRank": 6525,
-        "source": "北京中考信息网等网传数据"
+        "source": "自动抓取更新"
       },
       {
         "year": 2024,
@@ -1033,7 +1049,7 @@
         "minScore": 490,
         "maxScore": 670,
         "districtRank": 6994,
-        "source": "北京中考信息网等网传数据"
+        "source": "自动抓取更新"
       }
     ]
   },
@@ -1771,9 +1787,9 @@
       {
         "year": 2025,
         "batch": "统一招生",
-        "minScore": 481,
+        "minScore": 466,
         "maxScore": 510,
-        "districtRank": 1356,
+        "districtRank": null,
         "source": "自动抓取更新"
       },
       {
@@ -6061,7 +6077,7 @@
         "minScore": 466,
         "maxScore": 510,
         "districtRank": 348,
-        "source": "北京中考信息网等网传数据"
+        "source": "自动抓取更新"
       },
       {
         "year": 2024,
@@ -6112,7 +6128,7 @@
         "minScore": 421,
         "maxScore": 510,
         "districtRank": 2355,
-        "source": "北京中考信息网等网传数据"
+        "source": "自动抓取更新"
       },
       {
         "year": 2024,
@@ -6160,10 +6176,10 @@
       {
         "year": 2025,
         "batch": "统一招生",
-        "minScore": 442,
+        "minScore": 447,
         "maxScore": 510,
-        "districtRank": 1370,
-        "source": "北京中考信息网等网传数据"
+        "districtRank": 1123,
+        "source": "自动抓取更新"
       },
       {
         "year": 2024,
@@ -6246,7 +6262,7 @@
         "minScore": 428,
         "maxScore": 510,
         "districtRank": 2038,
-        "source": "北京中考信息网等网传数据"
+        "source": "自动抓取更新"
       },
       {
         "year": 2024,
@@ -6294,7 +6310,7 @@
         "minScore": 433,
         "maxScore": 510,
         "districtRank": 1793,
-        "source": "北京中考信息网等网传数据"
+        "source": "自动抓取更新"
       },
       {
         "year": 2024,
@@ -6353,6 +6369,14 @@
     "isKeySchool": false,
     "scoreLines": [
       {
+        "year": 2025,
+        "batch": "统一招生",
+        "minScore": 405,
+        "maxScore": 510,
+        "districtRank": 2901,
+        "source": "自动抓取更新"
+      },
+      {
         "year": 2024,
         "batch": "统一招生",
         "minScore": 563,
@@ -6377,12 +6401,20 @@
     "isKeySchool": false,
     "scoreLines": [
       {
+        "year": 2025,
+        "batch": "统一招生",
+        "minScore": 411,
+        "maxScore": 510,
+        "districtRank": 2708,
+        "source": "自动抓取更新"
+      },
+      {
         "year": 2024,
         "batch": "统一招生",
         "minScore": 572,
         "maxScore": 670,
         "districtRank": 3179,
-        "source": "北京中考信息网等网传数据"
+        "source": "自动抓取更新"
       }
     ]
   },
@@ -6400,6 +6432,14 @@
     ],
     "isKeySchool": false,
     "scoreLines": [
+      {
+        "year": 2025,
+        "batch": "统一招生",
+        "minScore": 394,
+        "maxScore": 510,
+        "districtRank": 3222,
+        "source": "自动抓取更新"
+      },
       {
         "year": 2024,
         "batch": "统一招生",
@@ -6473,6 +6513,14 @@
     "isKeySchool": false,
     "scoreLines": [
       {
+        "year": 2025,
+        "batch": "统一招生",
+        "minScore": 412,
+        "maxScore": 510,
+        "districtRank": 2680,
+        "source": "自动抓取更新"
+      },
+      {
         "year": 2024,
         "batch": "统一招生",
         "minScore": 575,
@@ -6502,7 +6550,7 @@
         "minScore": 423,
         "maxScore": 510,
         "districtRank": 2265,
-        "source": "北京中考信息网等网传数据"
+        "source": "自动抓取更新"
       },
       {
         "year": 2024,
@@ -6550,7 +6598,7 @@
         "minScore": 460,
         "maxScore": 510,
         "districtRank": 563,
-        "source": "北京中考信息网等网传数据"
+        "source": "自动抓取更新"
       },
       {
         "year": 2024,
@@ -6585,6 +6633,14 @@
     "isKeySchool": false,
     "scoreLines": [
       {
+        "year": 2025,
+        "batch": "统一招生",
+        "minScore": 415,
+        "maxScore": 510,
+        "districtRank": 2569,
+        "source": "自动抓取更新"
+      },
+      {
         "year": 2024,
         "batch": "统一招生",
         "minScore": 540,
@@ -6608,6 +6664,14 @@
     ],
     "isKeySchool": false,
     "scoreLines": [
+      {
+        "year": 2025,
+        "batch": "统一招生",
+        "minScore": 426,
+        "maxScore": 510,
+        "districtRank": 2140,
+        "source": "自动抓取更新"
+      },
       {
         "year": 2024,
         "batch": "统一招生",
@@ -6735,6 +6799,14 @@
     "isKeySchool": false,
     "scoreLines": [
       {
+        "year": 2025,
+        "batch": "统一招生",
+        "minScore": 422,
+        "maxScore": 510,
+        "districtRank": 2311,
+        "source": "自动抓取更新"
+      },
+      {
         "year": 2024,
         "batch": "统一招生",
         "minScore": 584,
@@ -6759,6 +6831,14 @@
     "isKeySchool": false,
     "scoreLines": [
       {
+        "year": 2025,
+        "batch": "统一招生",
+        "minScore": 427,
+        "maxScore": 510,
+        "districtRank": 2095,
+        "source": "自动抓取更新"
+      },
+      {
         "year": 2024,
         "batch": "统一招生",
         "minScore": 588,
@@ -6782,6 +6862,14 @@
     ],
     "isKeySchool": false,
     "scoreLines": [
+      {
+        "year": 2025,
+        "batch": "统一招生",
+        "minScore": 407,
+        "maxScore": 510,
+        "districtRank": 2846,
+        "source": "自动抓取更新"
+      },
       {
         "year": 2024,
         "batch": "统一招生",
@@ -6882,6 +6970,14 @@
     "isKeySchool": false,
     "scoreLines": [
       {
+        "year": 2025,
+        "batch": "统一招生",
+        "minScore": 426,
+        "maxScore": 510,
+        "districtRank": null,
+        "source": "自动抓取更新"
+      },
+      {
         "year": 2024,
         "batch": "统一招生",
         "minScore": 560,
@@ -6910,8 +7006,8 @@
         "batch": "统一招生",
         "minScore": 462,
         "maxScore": 510,
-        "districtRank": 639,
-        "source": "北京中考信息网等网传数据"
+        "districtRank": null,
+        "source": "自动抓取更新"
       },
       {
         "year": 2024,
@@ -6937,6 +7033,14 @@
     ],
     "isKeySchool": false,
     "scoreLines": [
+      {
+        "year": 2025,
+        "batch": "统一招生",
+        "minScore": 429,
+        "maxScore": 510,
+        "districtRank": null,
+        "source": "自动抓取更新"
+      },
       {
         "year": 2024,
         "batch": "统一招生",
@@ -6964,6 +7068,14 @@
     ],
     "isKeySchool": true,
     "scoreLines": [
+      {
+        "year": 2025,
+        "batch": "统一招生",
+        "minScore": 448,
+        "maxScore": 510,
+        "districtRank": null,
+        "source": "自动抓取更新"
+      },
       {
         "year": 2024,
         "batch": "统一招生",
@@ -7028,6 +7140,14 @@
     ],
     "isKeySchool": false,
     "scoreLines": [
+      {
+        "year": 2025,
+        "batch": "统一招生",
+        "minScore": 463,
+        "maxScore": 510,
+        "districtRank": null,
+        "source": "自动抓取更新"
+      },
       {
         "year": 2024,
         "batch": "统一招生",
@@ -7558,6 +7678,14 @@
     "isKeySchool": true,
     "scoreLines": [
       {
+        "year": 2025,
+        "batch": "统一招生",
+        "minScore": 480,
+        "maxScore": 510,
+        "districtRank": null,
+        "source": "自动抓取更新"
+      },
+      {
         "year": 2024,
         "batch": "统一招生",
         "minScore": 630,
@@ -7691,10 +7819,10 @@
       {
         "year": 2025,
         "batch": "统一招生",
-        "minScore": 465,
+        "minScore": 471,
         "maxScore": 510,
-        "districtRank": 500,
-        "source": "北京中考信息网等网传数据"
+        "districtRank": null,
+        "source": "自动抓取更新"
       },
       {
         "year": 2024,
@@ -7720,6 +7848,14 @@
     ],
     "isKeySchool": false,
     "scoreLines": [
+      {
+        "year": 2025,
+        "batch": "统一招生",
+        "minScore": 437,
+        "maxScore": 510,
+        "districtRank": null,
+        "source": "自动抓取更新"
+      },
       {
         "year": 2024,
         "batch": "统一招生",
@@ -7817,6 +7953,14 @@
     "isKeySchool": false,
     "scoreLines": [
       {
+        "year": 2025,
+        "batch": "统一招生",
+        "minScore": 460,
+        "maxScore": 510,
+        "districtRank": null,
+        "source": "自动抓取更新"
+      },
+      {
         "year": 2024,
         "batch": "统一招生",
         "minScore": 604,
@@ -7841,6 +7985,14 @@
     "isKeySchool": false,
     "scoreLines": [
       {
+        "year": 2025,
+        "batch": "统一招生",
+        "minScore": 453,
+        "maxScore": 510,
+        "districtRank": null,
+        "source": "自动抓取更新"
+      },
+      {
         "year": 2024,
         "batch": "统一招生",
         "minScore": 595,
@@ -7864,6 +8016,14 @@
     ],
     "isKeySchool": false,
     "scoreLines": [
+      {
+        "year": 2025,
+        "batch": "统一招生",
+        "minScore": 450,
+        "maxScore": 510,
+        "districtRank": null,
+        "source": "自动抓取更新"
+      },
       {
         "year": 2024,
         "batch": "统一招生",
@@ -8130,8 +8290,8 @@
         "batch": "统一招生",
         "minScore": 450,
         "maxScore": 510,
-        "districtRank": 1100,
-        "source": "北京中考信息网等网传数据"
+        "districtRank": null,
+        "source": "自动抓取更新"
       },
       {
         "year": 2024,
@@ -8382,6 +8542,14 @@
     "isKeySchool": false,
     "scoreLines": [
       {
+        "year": 2025,
+        "batch": "统一招生",
+        "minScore": 477,
+        "maxScore": 510,
+        "districtRank": null,
+        "source": "自动抓取更新"
+      },
+      {
         "year": 2024,
         "batch": "统一招生",
         "minScore": 627,
@@ -8586,6 +8754,14 @@
     "isKeySchool": true,
     "scoreLines": [
       {
+        "year": 2025,
+        "batch": "统一招生",
+        "minScore": 467,
+        "maxScore": 510,
+        "districtRank": null,
+        "source": "自动抓取更新"
+      },
+      {
         "year": 2024,
         "batch": "统一招生",
         "minScore": 613,
@@ -8625,6 +8801,14 @@
     ],
     "isKeySchool": false,
     "scoreLines": [
+      {
+        "year": 2025,
+        "batch": "统一招生",
+        "minScore": 415,
+        "maxScore": 510,
+        "districtRank": null,
+        "source": "自动抓取更新"
+      },
       {
         "year": 2024,
         "batch": "统一招生",
@@ -8686,8 +8870,8 @@
         "batch": "统一招生",
         "minScore": 619,
         "maxScore": 670,
-        "districtRank": 1182,
-        "source": "北京中考信息网等网传数据"
+        "districtRank": null,
+        "source": "自动抓取更新"
       },
       {
         "year": 2023,
@@ -8754,12 +8938,20 @@
     "isKeySchool": false,
     "scoreLines": [
       {
+        "year": 2025,
+        "batch": "统一招生",
+        "minScore": 441,
+        "maxScore": 510,
+        "districtRank": null,
+        "source": "自动抓取更新"
+      },
+      {
         "year": 2024,
         "batch": "统一招生",
         "minScore": 579,
         "maxScore": 670,
-        "districtRank": 3344,
-        "source": "北京中考信息网等网传数据"
+        "districtRank": null,
+        "source": "自动抓取更新"
       }
     ]
   },
@@ -8780,18 +8972,18 @@
       {
         "year": 2025,
         "batch": "统一招生",
-        "minScore": 450,
+        "minScore": 455,
         "maxScore": 510,
-        "districtRank": 1400,
-        "source": "北京中考信息网等网传数据"
+        "districtRank": null,
+        "source": "自动抓取更新"
       },
       {
         "year": 2024,
         "batch": "统一招生",
         "minScore": 598,
         "maxScore": 670,
-        "districtRank": 2305,
-        "source": "北京中考信息网等网传数据"
+        "districtRank": null,
+        "source": "自动抓取更新"
       }
     ]
   },
@@ -8812,18 +9004,18 @@
       {
         "year": 2025,
         "batch": "统一招生",
-        "minScore": 445,
+        "minScore": 450,
         "maxScore": 510,
-        "districtRank": 1500,
-        "source": "北京中考信息网等网传数据"
+        "districtRank": null,
+        "source": "自动抓取更新"
       },
       {
         "year": 2024,
         "batch": "统一招生",
         "minScore": 591,
         "maxScore": 670,
-        "districtRank": 2660,
-        "source": "北京中考信息网等网传数据"
+        "districtRank": null,
+        "source": "自动抓取更新"
       }
     ]
   },
@@ -8844,18 +9036,18 @@
       {
         "year": 2025,
         "batch": "统一招生",
-        "minScore": 465,
+        "minScore": 470,
         "maxScore": 510,
-        "districtRank": 1000,
-        "source": "北京中考信息网等网传数据"
+        "districtRank": null,
+        "source": "自动抓取更新"
       },
       {
         "year": 2024,
         "batch": "统一招生",
         "minScore": 617,
         "maxScore": 670,
-        "districtRank": 1295,
-        "source": "北京中考信息网等网传数据"
+        "districtRank": null,
+        "source": "自动抓取更新"
       }
     ]
   },
@@ -8874,12 +9066,20 @@
     "isKeySchool": false,
     "scoreLines": [
       {
+        "year": 2025,
+        "batch": "统一招生",
+        "minScore": 443,
+        "maxScore": 510,
+        "districtRank": null,
+        "source": "自动抓取更新"
+      },
+      {
         "year": 2024,
         "batch": "统一招生",
         "minScore": 582,
         "maxScore": 670,
-        "districtRank": 3101,
-        "source": "北京中考信息网等网传数据"
+        "districtRank": null,
+        "source": "自动抓取更新"
       }
     ]
   },
@@ -8898,12 +9098,20 @@
     "isKeySchool": false,
     "scoreLines": [
       {
+        "year": 2025,
+        "batch": "统一招生",
+        "minScore": 432,
+        "maxScore": 510,
+        "districtRank": null,
+        "source": "自动抓取更新"
+      },
+      {
         "year": 2024,
         "batch": "统一招生",
         "minScore": 568,
         "maxScore": 670,
-        "districtRank": 3726,
-        "source": "北京中考信息网等网传数据"
+        "districtRank": null,
+        "source": "自动抓取更新"
       }
     ]
   },
@@ -9078,6 +9286,14 @@
     "isKeySchool": true,
     "scoreLines": [
       {
+        "year": 2025,
+        "batch": "统一招生",
+        "minScore": 459,
+        "maxScore": 510,
+        "districtRank": null,
+        "source": "自动抓取更新"
+      },
+      {
         "year": 2024,
         "batch": "统一招生",
         "minScore": 603,
@@ -9101,6 +9317,14 @@
     ],
     "isKeySchool": false,
     "scoreLines": [
+      {
+        "year": 2025,
+        "batch": "统一招生",
+        "minScore": 454,
+        "maxScore": 510,
+        "districtRank": null,
+        "source": "自动抓取更新"
+      },
       {
         "year": 2024,
         "batch": "统一招生",
@@ -9672,10 +9896,10 @@
       {
         "year": 2025,
         "batch": "统一招生",
-        "minScore": 422,
+        "minScore": 432,
         "maxScore": 510,
-        "districtRank": 603,
-        "source": "北京中考信息网等网传数据"
+        "districtRank": null,
+        "source": "自动抓取更新"
       },
       {
         "year": 2024,
@@ -9872,6 +10096,14 @@
     ],
     "isKeySchool": false,
     "scoreLines": [
+      {
+        "year": 2025,
+        "batch": "统一招生",
+        "minScore": 467,
+        "maxScore": 510,
+        "districtRank": null,
+        "source": "自动抓取更新"
+      },
       {
         "year": 2024,
         "batch": "统一招生",

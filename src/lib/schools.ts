@@ -1,6 +1,7 @@
 import { School, AdmissionBatch } from "@/types/school";
 import schoolsData from "@/data/schools.json";
 import { formatScore, getLatestScore } from "@/lib/school-utils";
+import { matchesSchoolQuery } from "@/lib/pinyin";
 
 export { formatScore, getLatestScore };
 
@@ -48,12 +49,11 @@ export async function filterSchools(options: {
     if (options.district && options.district !== "全部" && school.district !== options.district) return false;
     if (options.type && options.type !== "全部" && school.type !== options.type) return false;
     if (options.query) {
-      const q = options.query.toLowerCase();
-      return (
-        school.name.toLowerCase().includes(q) ||
-        school.shortName.toLowerCase().includes(q) ||
-        school.district.includes(q)
-      );
+      return matchesSchoolQuery(options.query, {
+        name: school.name,
+        shortName: school.shortName,
+        district: school.district,
+      });
     }
     return true;
   });
@@ -111,11 +111,11 @@ export async function filterScoreRecords(options: {
     if (options.minScore && record.minScore < options.minScore) return false;
     if (options.maxScore && record.minScore > options.maxScore) return false;
     if (options.query) {
-      const q = options.query.toLowerCase();
-      return (
-        record.schoolName.toLowerCase().includes(q) ||
-        record.shortName.toLowerCase().includes(q)
-      );
+      return matchesSchoolQuery(options.query, {
+        name: record.schoolName,
+        shortName: record.shortName,
+        district: record.district,
+      });
     }
     return true;
   });

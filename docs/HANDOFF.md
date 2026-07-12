@@ -1,6 +1,6 @@
 # 开发交接文档
 
-> 最后更新：2026-07-12  
+> 最后更新：2026-07-12（阶段 1 完成）  
 > 用途：新开会话时粘贴或引用本文，快速恢复上下文。
 
 ## 项目概述
@@ -10,13 +10,14 @@
 - **仓库**：https://github.com/YoKingX/zhongzhao.git
 - **本地路径**：`/Users/zhaixiuchen/Dev/ai/zhongzhao`
 
-## 线上环境（已部署）
+## 线上环境
 
 | 服务 | URL | 说明 |
 |------|-----|------|
 | 网站 | https://zhongzhao-web.zhaixiuchen.workers.dev | OpenNext + Cloudflare Workers |
 | 同步 Worker | https://zhongzhao-sync.zhaixiuchen.workers.dev | 抓取分数线写入 D1 |
-| 健康检查 | https://zhongzhao-sync.zhaixiuchen.workers.dev/health | 应返回 `{"ok":true,"schools":329}` |
+| 健康检查 | https://zhongzhao-sync.zhaixiuchen.workers.dev/health | 含 `lastSync` |
+| 同步日志 | https://zhongzhao-sync.zhaixiuchen.workers.dev/logs | 最近 `sync_logs` |
 
 ### Cloudflare 资源
 
@@ -24,7 +25,6 @@
 |------|-----------|
 | D1 数据库 | `zhongzhao-db` / `e33030b9-7326-43ae-bcd7-5b0a54d2b1be` |
 | 账户 subdomain | `zhaixiuchen.workers.dev` |
-| Sync Worker 版本 | `8c9ce9e7-3ed3-40ab-9ba0-0732157ff77c` |
 
 ### Cron 定时（UTC）
 
@@ -37,104 +37,94 @@
 
 ### 密钥
 
-- `CRON_SECRET`：已通过 `wrangler secret put` 写入 Sync Worker（值未记录在仓库中）
+- `CRON_SECRET`：已通过 `wrangler secret put` 写入 Sync Worker
 - 手动同步：`curl -H "Authorization: Bearer $CRON_SECRET" https://zhongzhao-sync.zhaixiuchen.workers.dev/sync`
 
 ## 架构
 
 ```
-Cron Worker (zhongzhao-sync)  ──抓取──▶  D1 (zhongzhao-db)
+Cron Worker (zhongzhao-sync)  ──抓取──▶  D1 (zhongzhao-db) 远程
                                               ▲
 Next.js (zhongzhao-web)       ──读取──────────┘
          │
-         └── 本地开发回退：JSON (schools.json) + SQLite (data/zhongzhao.db)
+         └── 本地：next dev 读 schools.json；sync:data 写本地 D1（wrangler --local）
 ```
+
+**已移除**：SQLite（better-sqlite3）、GitHub Actions 定时同步、Vercel 配置。
 
 ## 数据规模
 
 - **329** 所普高（市教委 2024 名单）
-- **276** 所有分数线记录（575 条 score_lines）
-- **16** 个远程抓取源（`scripts/fetch-core.mjs`）
-- **132** 校标记「自动抓取更新」
+- **19** 个远程抓取源（`scripts/fetch-core.mjs`）
 
 ## 关键命令
 
 ```bash
-# 本地开发
-npm run dev
-
-# 全量同步（抓取 + JSON + 本地 SQLite）
-npm run sync:data
-
-# D1 种子数据
-npm run d1:seed:remote          # 导入远程 D1
-npm run d1:migrate              # 本地 D1 迁移
-
-# 部署
-npm run cf:sync:deploy          # 部署 Sync Worker + Cron
-npm run deploy                  # 构建并部署 Next.js 网站
-
-# 本地测试 Sync Worker
-npm run cf:sync:dev
-curl -H "Authorization: Bearer $CRON_SECRET" http://localhost:8787/sync
+npm run dev                 # 网站（JSON 回退）
+npm run sync:data           # 抓取 + JSON + 本地 D1
+npm run d1:seed:remote      # schools.json → 远程 D1
+npm run d1:stats            # 本地 D1 统计
+npm run cf:sync:deploy        # 部署 Sync Worker
+npm run deploy                # 部署网站
+npm run cf:sync:dev           # 本地 Sync Worker
 ```
 
-## 目录结构（新增/重要）
+## 目录结构（重要）
 
 ```
 migrations/0001_init.sql     # D1 表结构
 workers/sync/index.ts        # Cron Worker 入口
-scripts/fetch-core.mjs       # 抓取核心（无 fs，Worker 可用）
-scripts/fetch-scores.mjs       # CLI 抓取，写 scores-fetched.json
-scripts/d1-seed.mjs            # JSON/SQLite → D1 导入
-src/db/d1-queries.ts          # 生产 D1 查询
-src/db/schema.ts              # Drizzle schema
-src/lib/schools.ts            # D1 优先，JSON 回退
-wrangler.jsonc                # 网站 Worker 配置
-wrangler.sync.jsonc           # Sync Worker + Cron 配置
-docs/cloudflare.md            # 部署文档
+scripts/fetch-core.mjs       # 抓取核心（Worker 可用）
+scripts/d1-seed.mjs          # schools.json → D1
+src/db/d1-queries.ts         # 生产 D1 查询
+src/db/schema.ts             # Drizzle schema（类型定义）
+src/lib/schools.ts           # D1 优先，JSON 回退
+src/lib/pinyin.ts            # 拼音首字母搜索
+wrangler.jsonc               # 网站 Worker
+wrangler.sync.jsonc          # Sync Worker + Cron
 ```
 
-## 本次已完成
+## 路线图状态
 
-- [x] SQLite + Drizzle 本地数据库层
-- [x] Cloudflare D1 迁移与种子数据（远程 329 校 / 575 分数线）
-- [x] `fetch-core.mjs` 拆分，修复 Worker 中 `import.meta.url` 报错
-- [x] Sync Worker 部署 + 正确 Cron 表达式
-- [x] Next.js 通过 OpenNext 部署到 Cloudflare Workers
-- [x] 网站从 D1 读取数据，线上验证通过
+### 阶段 0 — MVP ✅
 
-## 待办（下一会话可继续）
+### 阶段 1 — 生产化 ✅
 
-### 高优先级
+- [x] 扩展抓取源至 19 个（东城 24-25、丰台 2025、外围区预估）
+- [x] 拼音首字母搜索
+- [x] Sync `/logs` + `/health` 增强
+- [x] 移除 SQLite，统一 D1（本地 wrangler --local）
+- [x] 移除 GitHub Actions Cron
+- [x] 部署 Cloudflare（Sync + 网站）
 
-1. **推送 GitHub**：确认 `git push` 成功（此前可能因安全策略需用户批准）
-2. **GitHub Actions 密钥**：若用 Actions 作备用同步，配置 `CRON_SECRET` 等 secrets
-3. **自定义域名**：绑定自有域名到 `zhongzhao-web` Worker
+### 阶段 2 — 数据质量（下一步）
 
-### 中优先级
+- [ ] 外围区 24-25 正式对比页（带区排名）
+- [ ] 学校别名治理
+- [ ] `/health` 数据质量指标
 
-4. **扩展抓取源**：丰台、通州、大兴等区 24-25 对比页
-5. **D1 为唯一数据源**：考虑去掉 build 时 SQLite 依赖，简化 `prebuild`
-6. **Sync 监控**：D1 `sync_logs` 表 + Dashboard 告警
+### 阶段 3 — 产品增强
 
-### 低优先级
+- [ ] 学校详情分数线趋势图
+- [ ] 填报攻略互动
+- [ ] SEO 优化
 
-7. **搜索优化**：学校名模糊搜索、拼音首字母
-8. **2026 实时数据**：成绩公布后的分数线更新
-9. **Vercel 文档清理**：README 仍提及 Vercel，可改为 Cloudflare 为主
+### 阶段 4 — 运营
+
+- [ ] 自定义域名
+- [ ] Sync 监控告警
+- [ ] 2026 成绩公布后实时更新
 
 ## 已知问题
 
-- OpenNext 构建时有若干 `Failed to copy` 警告（MDX 相关包），但不影响部署
-- 首页首次访问偶发 503（冷启动），刷新即可
-- `data/zhongzhao.db` 仅本地使用，已 gitignore，不入库
+- OpenNext 构建 MDX `Failed to copy` 警告（不影响部署）
+- 首页冷启动偶发 503
+- 外围区部分学校预估源无区排名
 
-## 新会话启动提示词（可复制）
+## 新会话启动提示词
 
 ```
 继续开发北京中考升学指导网站（zhongzhao）。
 请先阅读 docs/HANDOFF.md 和 docs/cloudflare.md。
 线上：https://zhongzhao-web.zhaixiuchen.workers.dev
-本地：/Users/zhaixiuchen/Dev/ai/zhongzhao
 ```

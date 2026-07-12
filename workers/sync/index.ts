@@ -52,6 +52,8 @@ async function applyFetchedScores(
     for (const [yearStr, [minScore, districtRank]] of Object.entries(years)) {
       const year = Number(yearStr);
       const maxScore = SCORE_SCALES[year] ?? null;
+      const rank =
+        districtRank != null && !Number.isNaN(districtRank) ? districtRank : null;
       await db
         .prepare(
           `INSERT INTO score_lines (school_id, year, batch, min_score, max_score, district_rank, source)
@@ -59,10 +61,10 @@ async function applyFetchedScores(
            ON CONFLICT(school_id, year, batch) DO UPDATE SET
              min_score = excluded.min_score,
              max_score = excluded.max_score,
-             district_rank = excluded.district_rank,
+             district_rank = COALESCE(excluded.district_rank, score_lines.district_rank),
              source = excluded.source`
         )
-        .bind(schoolId, year, minScore, maxScore, districtRank)
+        .bind(schoolId, year, minScore, maxScore, rank)
         .run();
       updated++;
     }
@@ -207,12 +209,64 @@ export default {
       const stats = await env.DB.prepare(
         "SELECT COUNT(*) AS c FROM schools"
       ).first<{ c: number }>();
-      return Response.json({ ok: true, schools: stats?.c ?? 0 });
+      const lastSync = await env.DB.prepare(
+        `SELECT started_at, finished_at, status, schools_count, schools_with_scores,
+                fetched_count, sources, errors
+         FROM sync_logs ORDER BY id DESC LIMIT 1`
+      ).first<{
+        started_at: string;
+        finished_at: string | null;
+        status: string;
+        schools_count: number | null;
+        schools_with_scores: number | null;
+        fetched_count: number | null;
+        sources: string;
+        errors: string;
+      }>();
+      return Response.json({
+        ok: true,
+        schools: stats?.c ?? 0,
+        lastSync: lastSync
+          ? {
+              ...lastSync,
+              sources: JSON.parse(lastSync.sources || "[]"),
+              errors: JSON.parse(lastSync.errors || "[]"),
+            }
+          : null,
+      });
+    }
+
+    if (url.pathname === "/logs") {
+      const limit = Math.min(Number(url.searchParams.get("limit") || 10), 50);
+      const { results } = await env.DB.prepare(
+        `SELECT id, started_at, finished_at, status, schools_count, schools_with_scores,
+                fetched_count, sources, errors
+         FROM sync_logs ORDER BY id DESC LIMIT ?`
+      )
+        .bind(limit)
+        .all<{
+          id: number;
+          started_at: string;
+          finished_at: string | null;
+          status: string;
+          schools_count: number | null;
+          schools_with_scores: number | null;
+          fetched_count: number | null;
+          sources: string;
+          errors: string;
+        }>();
+      return Response.json({
+        logs: (results || []).map((row) => ({
+          ...row,
+          sources: JSON.parse(row.sources || "[]"),
+          errors: JSON.parse(row.errors || "[]"),
+        })),
+      });
     }
 
     return Response.json({
       service: "zhongzhao-sync",
-      endpoints: ["/sync", "/health"],
+      endpoints: ["/sync", "/health", "/logs"],
     });
   },
 };

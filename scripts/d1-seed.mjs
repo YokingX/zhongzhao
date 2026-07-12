@@ -74,7 +74,7 @@ function main() {
 
   const migrate = spawnSync(
     "npx",
-    ["wrangler", "d1", "execute", "zhongzhao-db", target, "--file", "migrations/0001_init.sql", "-c", "wrangler.sync.jsonc"],
+    ["wrangler", "d1", "migrations", "apply", "zhongzhao-db", target, "-c", "wrangler.sync.jsonc"],
     { cwd: root, stdio: "inherit" }
   );
   if (migrate.status !== 0) process.exit(migrate.status || 1);

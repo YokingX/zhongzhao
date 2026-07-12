@@ -23,10 +23,28 @@ const SOURCES = [
     parser: "haidianCompare",
   },
   {
+    id: "dongcheng-24-25",
+    url: "https://www.zhongkaobj.cn/lqfsx/dcq/2025081311825.html",
+    district: "东城",
+    parser: "haidianCompare",
+  },
+  {
     id: "dongcheng-2024",
     url: "https://www.zhongkaobj.cn/lqfsx/dcq/202410212391.html",
     district: "东城",
     parser: "simple2024",
+  },
+  {
+    id: "fengtai-2025",
+    url: "https://www.zhongkaobj.cn/lqfsx/ftq/2025080111680.html",
+    district: "丰台",
+    parser: "singleDistrict2025",
+  },
+  {
+    id: "outer-districts-24-25-est",
+    url: "https://www.zhongkaobj.cn/lqfsx/qitaqu/202412025506.html",
+    district: "外围",
+    parser: "districtYearCompare",
   },
   {
     id: "xicheng-2024",
@@ -230,6 +248,22 @@ const OFFICIAL_ALIASES = {
   "大兴区第一中学": "北京市大兴区第一中学",
   "人大附通州校区": "中国人民大学附属中学通州校区",
   "北京市十一学校顺义学校": "北京师范大学附属实验中学顺义学校",
+  "十二中": "北京市第十二中学",
+  "十八中": "北京市第十八中学",
+  "钱学森中学": "北京钱学森中学",
+  "赵登禹学校": "北京市赵登禹学校",
+  "丰台外国语": "北京市丰台区外国语学校",
+  "民大附中丰台实验学校": "中央民族大学附属中学丰台实验学校",
+  "中国教育研究院丰台实验学校": "中国教育科学研究院丰台实验学校",
+  "一零一中大兴校": "北京一零一中大兴分校",
+  "清华附中大兴学校": "清华大学附属中学大兴学校",
+  "北师大实验中学大兴校": "北京师范大学附属实验中学大兴分校",
+  "人民大学附属中学通州校区": "中国人民大学附属中学通州校区",
+  "二中通州校区": "北京市第二中学通州校区",
+  "五中通州校区": "北京市第五中学通州校区",
+  "景山学校通州校区": "北京景山学校通州分校",
+  "理工附中通州校区": "北京理工大学附属中学通州校区",
+  "潞河中学于家务校区": "北京市通州区潞河中学于家务校区",
 };
 
 function normalizeSchoolName(raw) {
@@ -452,6 +486,83 @@ function parseDistrict2025(html) {
   return schools;
 }
 
+function parseSingleDistrict2025(html) {
+  const schools = {};
+  for (const row of parseHtmlTableRows(html)) {
+    const cells = row.split("|").map((c) => c.trim()).filter(Boolean);
+    if (cells.length < 4) continue;
+
+    let label;
+    let major;
+    let score;
+    let rank;
+
+    if (cells.length >= 5 && /^\d{2}$/.test(cells[1])) {
+      label = cells[0];
+      major = cells[2];
+      score = Number(cells[3]);
+      rank = Number(cells[4]);
+    } else if (cells.length >= 3) {
+      label = cells[0];
+      score = Number(cells[1]);
+      rank = Number(cells[2]);
+    } else {
+      continue;
+    }
+
+    if (isHeaderCell(label) || !score) continue;
+    if (major && !major.includes("普通") && major.includes("班")) continue;
+
+    const official = normalizeSchoolName(label);
+    if (!official) continue;
+    schools[official] = schools[official] || {};
+    schools[official][2025] = [score, rank];
+  }
+  return schools;
+}
+
+function parseScoreOnly(text) {
+  const m = String(text).replace(/\s+/g, "").match(/(\d{3})/);
+  return m ? Number(m[1]) : NaN;
+}
+
+function parseDistrictYearCompare(html) {
+  const schools = {};
+  for (const row of parseHtmlTableRows(html)) {
+    const cells = row.split("|").map((c) => c.trim()).filter(Boolean);
+    if (cells.length < 3) continue;
+    if (cells[0].includes("城区") || cells[0].includes("录取分数")) continue;
+
+    let label;
+    let y2024;
+    let y2025;
+
+    if (
+      cells.length >= 4 &&
+      (cells[0].includes("区") || cells[0] === "通州" || cells[0] === "怀柔")
+    ) {
+      label = cells[1];
+      y2024 = parseScoreOnly(cells[2]);
+      y2025 = parseScoreOnly(cells[3]);
+    } else if (cells.length >= 3) {
+      label = cells[0];
+      y2024 = parseScoreOnly(cells[1]);
+      y2025 = parseScoreOnly(cells[2]);
+    } else {
+      continue;
+    }
+
+    if (isHeaderCell(label) || !y2024 || !y2025) continue;
+
+    const official = normalizeSchoolName(label);
+    if (!official) continue;
+    schools[official] = schools[official] || {};
+    if (!schools[official][2024]) schools[official][2024] = [y2024, null];
+    if (!schools[official][2025]) schools[official][2025] = [y2025, null];
+  }
+  return schools;
+}
+
 async function fetchSource(source) {
   const res = await fetch(source.url, {
     headers: { "User-Agent": "BeijingZhongkaoGuide/1.0 (data-sync)" },
@@ -465,6 +576,8 @@ async function fetchSource(source) {
   if (source.parser === "districtTable") return parseDistrictTable(html);
   if (source.parser === "rateTable") return parseRateTable(html);
   if (source.parser === "district2025") return parseDistrict2025(html);
+  if (source.parser === "singleDistrict2025") return parseSingleDistrict2025(html);
+  if (source.parser === "districtYearCompare") return parseDistrictYearCompare(html);
   return {};
 }
 

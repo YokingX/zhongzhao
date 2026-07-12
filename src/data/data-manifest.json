@@ -1,12 +1,15 @@
 {
-  "lastUpdated": "2026-07-12T14:23:53.534Z",
-  "lastSync": "2026-07-12T14:23:53.534Z",
-  "schoolCount": 258,
+  "lastUpdated": "2026-07-12T15:24:22.367Z",
+  "lastSync": "2026-07-12T15:24:22.367Z",
+  "schoolCount": 290,
   "fetchSources": [
     "haidian-24-25",
     "xicheng-24-25",
     "chaoyang-24-25",
+    "dongcheng-24-25",
     "dongcheng-2024",
+    "fengtai-2025",
+    "outer-districts-24-25-est",
     "xicheng-2024",
     "haidian-2024",
     "fengtai-2024",

@@ -138,7 +138,7 @@ export function ScoreFilter({
           name="query"
           type="search"
           defaultValue={currentQuery}
-          placeholder="输入学校名称..."
+          placeholder="输入学校名称或拼音首字母..."
           className="flex h-10 w-full rounded-lg border border-input bg-card px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
         />
       </div>
