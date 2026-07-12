@@ -7,6 +7,18 @@ import { SCORE_ALIASES } from "./score-aliases.mjs";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const OUT = path.join(__dirname, "../src/data/schools.json");
+const FETCHED_PATH = path.join(__dirname, "scores-fetched.json");
+
+function loadFetchedScores() {
+  try {
+    const raw = JSON.parse(fs.readFileSync(FETCHED_PATH, "utf-8"));
+    return raw.schools || {};
+  } catch {
+    return {};
+  }
+}
+
+const FETCHED_SCORES = loadFetchedScores();
 
 const SHORT_NAMES = {
   "中国人民大学附属中学": "人大附中",
@@ -81,20 +93,36 @@ function getType(name) {
 }
 
 function resolveScoreData(name) {
-  if (SCORE_DATA[name]) return SCORE_DATA[name];
-  const aliasTarget = SCORE_ALIASES[name];
-  if (aliasTarget && SCORE_DATA[aliasTarget]) return SCORE_DATA[aliasTarget];
-  for (const [alias, target] of Object.entries(SCORE_ALIASES)) {
-    if (name.includes(alias) || alias.includes(name)) {
-      if (SCORE_DATA[target]) return SCORE_DATA[target];
+  let manual = SCORE_DATA[name];
+  if (!manual) {
+    const aliasTarget = SCORE_ALIASES[name];
+    if (aliasTarget) manual = SCORE_DATA[aliasTarget];
+  }
+  if (!manual) {
+    for (const [alias, target] of Object.entries(SCORE_ALIASES)) {
+      if (name.includes(alias) || alias.includes(name)) {
+        manual = SCORE_DATA[target];
+        if (manual) break;
+      }
     }
   }
-  return null;
+
+  const fetched =
+    FETCHED_SCORES[name] ||
+    FETCHED_SCORES[SCORE_ALIASES[name]] ||
+    null;
+
+  if (!manual && !fetched) return null;
+  return { ...(manual || {}), ...(fetched || {}) };
 }
 
 function buildScoreLines(name) {
   const data = resolveScoreData(name);
   if (!data) return [];
+  const fetched =
+    FETCHED_SCORES[name] ||
+    FETCHED_SCORES[SCORE_ALIASES[name]] ||
+    {};
   const lines = [];
   for (const [yearStr, vals] of Object.entries(data)) {
     const year = Number(yearStr);
@@ -105,7 +133,9 @@ function buildScoreLines(name) {
       minScore,
       maxScore: SCORE_SCALES[year],
       districtRank,
-      source: "北京中考信息网等网传数据",
+      source: fetched[yearStr]
+        ? "自动抓取更新"
+        : "北京中考信息网等网传数据",
     });
   }
   return lines.sort((a, b) => b.year - a.year);

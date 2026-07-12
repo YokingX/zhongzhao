@@ -1,0 +1,24 @@
+{
+  "lastUpdated": "2026-07-12T13:14:22.365Z",
+  "lastSync": "2026-07-12T13:14:22.365Z",
+  "schoolCount": 258,
+  "fetchSources": [
+    "haidian-24-25",
+    "xicheng-24-25",
+    "chaoyang-24-25",
+    "dongcheng-2024",
+    "xicheng-2024",
+    "haidian-2024",
+    "fengtai-2024",
+    "chaoyang-2024",
+    "shijingshan-2024",
+    "shijingshan-2024-bj",
+    "changping-2024",
+    "changping-2024-gk",
+    "tongzhou-2024",
+    "daxing-2024",
+    "beijing-rate-2024",
+    "outer-districts-2025"
+  ],
+  "autoSync": true
+}

@@ -4,10 +4,14 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
+    "prebuild": "npm run generate:schools",
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "generate:schools": "node scripts/generate-schools.mjs"
+    "generate:schools": "node scripts/generate-schools.mjs",
+    "fetch:scores": "node scripts/fetch-scores.mjs",
+    "sync:data": "node scripts/sync-data.mjs",
+    "watch:data": "node scripts/watch-data.mjs"
   },
   "dependencies": {
     "@next/mdx": "^15.3.3",
