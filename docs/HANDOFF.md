@@ -7,7 +7,7 @@
 
 北京中考升学指导网站，帮助初三学生及家长查询普高信息、分数线、政策与填报攻略。
 
-- **仓库**：https://github.com/YoKingX/zhongzhao.git
+- **仓库**：https://github.com/YokingX/zhongzhao
 - **本地路径**：`/Users/zhaixiuchen/Dev/ai/zhongzhao`
 
 ## 数据架构（核心）
