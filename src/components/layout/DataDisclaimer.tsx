@@ -35,6 +35,7 @@ export function DataDisclaimer({ className = "" }: { className?: string }) {
         <p className="mt-2 text-xs">
           数据最后更新：{formatDate(lastUpdated)}
           {manifest.autoSync && " · 已启用自动同步"}
+          {meta.database && " · SQLite 数据库"}
         </p>
       )}
     </div>

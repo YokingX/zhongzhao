@@ -21,7 +21,7 @@ interface PageProps {
 
 export default async function ScoresPage({ searchParams }: PageProps) {
   const params = await searchParams;
-  const records = filterScoreRecords({
+  const records = await filterScoreRecords({
     district: params.district,
     batch: params.batch,
     year: params.year && params.year !== "全部" ? Number(params.year) : undefined,
@@ -44,8 +44,8 @@ export default async function ScoresPage({ searchParams }: PageProps) {
           <div className="sticky top-20 rounded-xl border border-border bg-card p-4">
             <h2 className="mb-4 font-semibold">筛选条件</h2>
             <ScoreFilter
-              districts={getDistricts()}
-              years={getScoreYears()}
+              districts={await getDistricts()}
+              years={await getScoreYears()}
               currentDistrict={params.district}
               currentBatch={params.batch}
               currentYear={params.year}

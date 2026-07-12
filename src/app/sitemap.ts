@@ -2,7 +2,7 @@ import type { MetadataRoute } from "next";
 import { getAllSchools } from "@/lib/schools";
 import { getAllPolicySlugs } from "@/lib/policies";
 
-export default function sitemap(): MetadataRoute.Sitemap {
+export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const baseUrl = "https://beijing-zhongkao-guide.vercel.app";
 
   const staticPages = [
@@ -14,7 +14,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { url: `${baseUrl}/timeline`, lastModified: new Date(), changeFrequency: "monthly" as const, priority: 0.7 },
   ];
 
-  const schoolPages = getAllSchools().map((school) => ({
+  const schoolPages = (await getAllSchools()).map((school) => ({
     url: `${baseUrl}/schools/${school.id}`,
     lastModified: new Date(),
     changeFrequency: "monthly" as const,

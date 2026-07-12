@@ -1,0 +1,19 @@
+{
+  "$schema": "./node_modules/wrangler/config-schema.json",
+  "name": "zhongzhao-web",
+  "main": ".open-next/worker.js",
+  "compatibility_date": "2026-06-05",
+  "compatibility_flags": ["nodejs_compat"],
+  "assets": {
+    "directory": ".open-next/assets",
+    "binding": "ASSETS"
+  },
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "zhongzhao-db",
+      "database_id": "e33030b9-7326-43ae-bcd7-5b0a54d2b1be",
+      "migrations_dir": "migrations"
+    }
+  ]
+}

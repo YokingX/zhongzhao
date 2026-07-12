@@ -3,7 +3,7 @@ import { MapPin, ExternalLink } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { School } from "@/types/school";
-import { getLatestScore, formatScore } from "@/lib/schools";
+import { getLatestScore, formatScore } from "@/lib/school-utils";
 
 interface SchoolCardProps {
   school: School;

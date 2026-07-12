@@ -2,7 +2,8 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ArrowLeft } from "lucide-react";
-import { getAllSchools, getSchoolById, formatScore } from "@/lib/schools";
+import { getAllSchools, getSchoolById } from "@/lib/schools";
+import { formatScore } from "@/lib/school-utils";
 import { SchoolDetailInfo } from "@/components/schools/SchoolCard";
 import { ScoreChart } from "@/components/scores/ScoreTable";
 import { DataDisclaimer } from "@/components/layout/DataDisclaimer";
@@ -12,13 +13,14 @@ interface PageProps {
   params: Promise<{ id: string }>;
 }
 
-export function generateStaticParams() {
-  return getAllSchools().map((school) => ({ id: school.id }));
+export async function generateStaticParams() {
+  const schools = await getAllSchools();
+  return schools.map((school) => ({ id: school.id }));
 }
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const { id } = await params;
-  const school = getSchoolById(id);
+  const school = await getSchoolById(id);
   if (!school) return { title: "学校未找到" };
   return {
     title: school.name,
@@ -28,7 +30,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 
 export default async function SchoolDetailPage({ params }: PageProps) {
   const { id } = await params;
-  const school = getSchoolById(id);
+  const school = await getSchoolById(id);
   if (!school) notFound();
 
   const unifiedLines = school.scoreLines

@@ -1,32 +1,52 @@
-import { School, ScoreLine, AdmissionBatch, SCORE_SCALES } from "@/types/school";
+import { School, AdmissionBatch } from "@/types/school";
 import schoolsData from "@/data/schools.json";
+import { formatScore, getLatestScore } from "@/lib/school-utils";
 
-const schools = schoolsData as School[];
+export { formatScore, getLatestScore };
 
-export function getAllSchools(): School[] {
-  return schools;
+let schoolsCache: School[] | null = null;
+
+async function loadSchoolsFromD1(): Promise<School[] | null> {
+  try {
+    const { getCloudflareContext } = await import("@opennextjs/cloudflare");
+    const { queryAllSchoolsD1 } = await import("@/db/d1-queries");
+    const { env } = getCloudflareContext();
+    if (!env?.DB) return null;
+    const schools = await queryAllSchoolsD1(env.DB);
+    return schools.length > 0 ? schools : null;
+  } catch {
+    return null;
+  }
 }
 
-export function getSchoolById(id: string): School | undefined {
+function loadSchoolsFromJson(): School[] {
+  if (!schoolsCache) {
+    schoolsCache = schoolsData as School[];
+  }
+  return schoolsCache;
+}
+
+export async function getAllSchools(): Promise<School[]> {
+  const d1 = await loadSchoolsFromD1();
+  return d1 ?? loadSchoolsFromJson();
+}
+
+export async function getSchoolById(id: string): Promise<School | undefined> {
+  const schools = await getAllSchools();
   return schools.find((s) => s.id === id);
 }
 
-export function filterSchools(options: {
+export async function filterSchools(options: {
   district?: string;
   type?: string;
   query?: string;
   hasScores?: boolean;
-}): School[] {
+}): Promise<School[]> {
+  const schools = await getAllSchools();
   return schools.filter((school) => {
-    if (options.hasScores && school.scoreLines.length === 0) {
-      return false;
-    }
-    if (options.district && options.district !== "全部" && school.district !== options.district) {
-      return false;
-    }
-    if (options.type && options.type !== "全部" && school.type !== options.type) {
-      return false;
-    }
+    if (options.hasScores && school.scoreLines.length === 0) return false;
+    if (options.district && options.district !== "全部" && school.district !== options.district) return false;
+    if (options.type && options.type !== "全部" && school.type !== options.type) return false;
     if (options.query) {
       const q = options.query.toLowerCase();
       return (
@@ -53,9 +73,9 @@ export interface ScoreRecord {
   note?: string;
 }
 
-export function getAllScoreRecords(): ScoreRecord[] {
+export async function getAllScoreRecords(): Promise<ScoreRecord[]> {
   const records: ScoreRecord[] = [];
-  for (const school of schools) {
+  for (const school of await getAllSchools()) {
     for (const line of school.scoreLines) {
       records.push({
         schoolId: school.id,
@@ -75,30 +95,21 @@ export function getAllScoreRecords(): ScoreRecord[] {
   return records.sort((a, b) => b.year - a.year || b.minScore - a.minScore);
 }
 
-export function filterScoreRecords(options: {
+export async function filterScoreRecords(options: {
   district?: string;
   batch?: string;
   year?: number;
   minScore?: number;
   maxScore?: number;
   query?: string;
-}): ScoreRecord[] {
-  return getAllScoreRecords().filter((record) => {
-    if (options.district && options.district !== "全部" && record.district !== options.district) {
-      return false;
-    }
-    if (options.batch && options.batch !== "全部" && record.batch !== options.batch) {
-      return false;
-    }
-    if (options.year && record.year !== options.year) {
-      return false;
-    }
-    if (options.minScore && record.minScore < options.minScore) {
-      return false;
-    }
-    if (options.maxScore && record.minScore > options.maxScore) {
-      return false;
-    }
+}): Promise<ScoreRecord[]> {
+  const records = await getAllScoreRecords();
+  return records.filter((record) => {
+    if (options.district && options.district !== "全部" && record.district !== options.district) return false;
+    if (options.batch && options.batch !== "全部" && record.batch !== options.batch) return false;
+    if (options.year && record.year !== options.year) return false;
+    if (options.minScore && record.minScore < options.minScore) return false;
+    if (options.maxScore && record.minScore > options.maxScore) return false;
     if (options.query) {
       const q = options.query.toLowerCase();
       return (
@@ -110,28 +121,19 @@ export function filterScoreRecords(options: {
   });
 }
 
-export function getLatestScore(school: School, batch: AdmissionBatch = "统一招生"): ScoreLine | undefined {
-  return school.scoreLines
-    .filter((l) => l.batch === batch)
-    .sort((a, b) => b.year - a.year)[0];
-}
-
-export function getDistricts(): string[] {
+export async function getDistricts(): Promise<string[]> {
+  const schools = await getAllSchools();
   return [...new Set(schools.map((s) => s.district))].sort();
 }
 
-export function formatScore(score: number, year: number): string {
-  const max = SCORE_SCALES[year];
-  return max ? `${score}/${max}` : `${score}`;
-}
-
-export function getSchoolsWithScores(): number {
+export async function getSchoolsWithScores(): Promise<number> {
+  const schools = await getAllSchools();
   return schools.filter((s) => s.scoreLines.length > 0).length;
 }
 
-export function getScoreYears(): number[] {
+export async function getScoreYears(): Promise<number[]> {
   const years = new Set<number>();
-  for (const school of schools) {
+  for (const school of await getAllSchools()) {
     for (const line of school.scoreLines) {
       years.add(line.year);
     }

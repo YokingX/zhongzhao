@@ -51,9 +51,9 @@ const keyDates = [
   { label: "志愿填报截止", date: "2026-07-17" },
 ];
 
-export default function HomePage() {
-  const schools = getAllSchools();
-  const withScores = getSchoolsWithScores();
+export default async function HomePage() {
+  const schools = await getAllSchools();
+  const withScores = await getSchoolsWithScores();
   const policies = getAllPolicies().slice(0, 3);
   const zhongkaoDays = getDaysUntil("2026-06-24");
   const volunteerDays = getDaysUntil("2026-07-13");

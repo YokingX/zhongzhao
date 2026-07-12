@@ -12,52 +12,38 @@
 
 ## 技术栈
 
-- Next.js 15 (App Router)
-- TypeScript
-- Tailwind CSS 4
-- MDX (政策文章)
-- Recharts (分数线趋势图)
+- Next.js 15 (App Router) + OpenNext（Cloudflare Workers 部署）
+- Cloudflare D1（生产数据库）+ SQLite（本地开发）
+- TypeScript / Tailwind CSS 4 / MDX / Recharts
 
 ## 自动数据同步
 
-网站已配置自动数据更新流水线：
-
 | 触发方式 | 说明 |
 |---------|------|
-| **部署前** | `npm run build` 前自动执行 `generate:schools` |
-| **GitHub Actions** | 每周一 + 中招季（6-8月）每天自动抓取并提交 |
-| **手动推送脚本** | 修改 `scripts/score-data.mjs` 后 push 触发同步 |
-| **本地开发** | `npm run watch:data` 监听数据文件变动 |
+| **Cloudflare Cron** | Sync Worker 定时抓取写入 D1（见 `wrangler.sync.jsonc`） |
+| **GitHub Actions** | 每周一 + 中招季每天抓取并提交（备用） |
+| **部署前** | `npm run build` 前自动执行 `generate:schools` + `db:import` |
+| **手动** | `npm run sync:data` 或调用 Sync Worker `/sync` 端点 |
 
 ```bash
-# 手动全量同步（抓取远程 + 重新生成）
+# 手动全量同步（抓取远程 + 重新生成 JSON + 本地 SQLite）
 npm run sync:data
 
-# 仅重新生成（不抓取）
-npm run generate:schools
+# 导入远程 D1
+npm run d1:seed:remote
 
-# 开发时监听数据变动
-npm run watch:data
+# 部署
+npm run cf:sync:deploy   # Sync Worker
+npm run deploy           # 网站
 ```
 
-部署到 Vercel 后，GitHub Actions 提交数据更新会自动触发 Vercel 重新部署。
-
-### GitHub 仓库配置
-
-1. 将代码 push 到 GitHub
-2. 在 [Vercel](https://vercel.com) 导入该仓库（Git 集成）
-3. Actions 会自动运行 `Sync School Data` 工作流
+Cloudflare 部署详见 [docs/cloudflare.md](docs/cloudflare.md)，开发交接见 [docs/HANDOFF.md](docs/HANDOFF.md)。
 
 ## 数据更新
 
-学校数据基于北京市教委 2024 年招生资格名单，分数线来自公开网传数据整理。
+学校数据基于北京市教委 2024 年招生资格名单，分数线来自公开网传数据及自动抓取。
 
-```bash
-# 更新 scripts/score-data.mjs 后重新生成
-npm run generate:schools
-```
-
-当前收录 **329 所**普通高中，其中 **273 所**有历年统招分数线（含 2022-2025 部分年份）。剩余主要为国际学校/双语民办校，通常不公布统一招生分数线。
+当前收录 **329 所**普通高中，其中 **276 所**有历年统招分数线。
 
 ## 快速开始
 
@@ -70,12 +56,21 @@ npm run dev
 
 ## 部署
 
+生产环境部署在 **Cloudflare Workers**：
+
+```bash
+npm run deploy           # 网站
+npm run cf:sync:deploy   # 定时同步 Worker
+```
+
+详见 [docs/cloudflare.md](docs/cloudflare.md)。
+
+本地构建：
+
 ```bash
 npm run build
 npm start
 ```
-
-推荐部署到 [Vercel](https://vercel.com)。
 
 ## 免责声明
 

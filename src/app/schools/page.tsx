@@ -20,15 +20,15 @@ interface PageProps {
 
 export default async function SchoolsPage({ searchParams }: PageProps) {
   const params = await searchParams;
-  const schools = filterSchools({
+  const schools = await filterSchools({
     district: params.district,
     type: params.type,
     query: params.query,
     hasScores: params.hasScores === "1",
   });
-  const districts = getDistricts();
-  const total = getAllSchools().length;
-  const withScores = getSchoolsWithScores();
+  const districts = await getDistricts();
+  const total = (await getAllSchools()).length;
+  const withScores = await getSchoolsWithScores();
 
   return (
     <div className="mx-auto max-w-6xl px-4 py-8">

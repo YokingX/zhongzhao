@@ -1,85 +1,101 @@
 {
-  "fetchedAt": "2026-07-12T13:14:22.365Z",
+  "fetchedAt": "2026-07-12T14:35:37.903Z",
   "sources": [
     {
       "id": "haidian-24-25",
       "url": "https://www.zhongkaobj.cn/lqfsx/hdq/2025081311829.html",
-      "count": 48
+      "count": 48,
+      "district": "海淀"
     },
     {
       "id": "xicheng-24-25",
       "url": "https://www.zhongkaobj.cn/lqfsx/xcq/2025081311827.html",
-      "count": 28
+      "count": 28,
+      "district": "西城"
     },
     {
       "id": "chaoyang-24-25",
       "url": "https://www.zhongkaobj.cn/lqfsx/cyq/2025081311826.html",
-      "count": 22
+      "count": 22,
+      "district": "朝阳"
     },
     {
       "id": "dongcheng-2024",
       "url": "https://www.zhongkaobj.cn/lqfsx/dcq/202410212391.html",
-      "count": 18
+      "count": 18,
+      "district": "东城"
     },
     {
       "id": "xicheng-2024",
       "url": "https://www.gaokzx.com/gk/zhongkao/126162.html",
-      "count": 29
+      "count": 29,
+      "district": "西城"
     },
     {
       "id": "haidian-2024",
       "url": "https://www.gaokzx.com/gk/zhongkao/126160.html",
-      "count": 57
+      "count": 57,
+      "district": "海淀"
     },
     {
       "id": "fengtai-2024",
       "url": "https://www.zhongkaobj.cn/lqfsx/ftq/202410212412.html",
-      "count": 13
+      "count": 13,
+      "district": "丰台"
     },
     {
       "id": "chaoyang-2024",
       "url": "https://www.gaokzx.com/gk/zhongkao/126165.html",
-      "count": 20
+      "count": 20,
+      "district": "朝阳"
     },
     {
       "id": "shijingshan-2024",
       "url": "https://www.gaokzx.com/gk/zhongkao/126167.html",
-      "count": 6
+      "count": 6,
+      "district": "石景山"
     },
     {
       "id": "shijingshan-2024-bj",
       "url": "https://www.zhongkaobj.cn/lqfsx/qitaqu/202410212432.html",
-      "count": 6
+      "count": 6,
+      "district": "石景山"
     },
     {
       "id": "changping-2024",
       "url": "https://www.zhongkaobj.cn/lqfsx/cpq/202410212418.html",
-      "count": 6
+      "count": 6,
+      "district": "昌平"
     },
     {
       "id": "changping-2024-gk",
       "url": "https://www.gaokzx.com/gk/zhongkao/126168.html",
-      "count": 5
+      "count": 5,
+      "district": "昌平"
     },
     {
       "id": "tongzhou-2024",
       "url": "https://www.gaokzx.com/gk/zhongkao/126163.html",
-      "count": 3
+      "count": 3,
+      "district": "通州"
     },
     {
       "id": "daxing-2024",
       "url": "https://www.gaokzx.com/gk/zhongkao/126169.html",
-      "count": 5
+      "count": 5,
+      "district": "大兴"
     },
     {
       "id": "beijing-rate-2024",
       "url": "https://www.zhongkaobj.cn/lqfsx/qitaqu/202411013337.html",
-      "count": 87
+      "count": 87,
+      "district": "全市"
     },
     {
       "id": "outer-districts-2025",
       "url": "https://www.zhongkaobj.cn/lqfsx/qitaqu/2025080111678.html",
-      "count": 14
+      "count": 14,
+      "district": "外围"
     }
   ],
   "failed": [],

@@ -1,0 +1,26 @@
+{
+  "$schema": "../node_modules/wrangler/config-schema.json",
+  "name": "zhongzhao-sync",
+  "main": "workers/sync/index.ts",
+  "compatibility_date": "2026-06-05",
+  "compatibility_flags": ["nodejs_compat"],
+  // Cloudflare Cron：5 字段 = 分 时 日 月 周（UTC；周 1=SUN … 7=SAT）
+  // 北京时间 = UTC+8，故 19:00 UTC = 次日 03:00 北京时间
+  "triggers": {
+    "crons": [
+      "0 19 * * SUN",
+      "0 19 * 6,7,8 *"
+    ]
+  },
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "zhongzhao-db",
+      "database_id": "e33030b9-7326-43ae-bcd7-5b0a54d2b1be",
+      "migrations_dir": "migrations"
+    }
+  ],
+  "vars": {
+    "ENVIRONMENT": "production"
+  }
+}

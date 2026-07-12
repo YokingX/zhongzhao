@@ -21,7 +21,11 @@ function sync() {
     stdio: "inherit",
   });
   if (res.status === 0) {
-    console.log("数据已更新，刷新浏览器即可看到变化");
+    spawnSync(process.execPath, ["scripts/db-import.mjs"], {
+      cwd: path.join(__dirname, ".."),
+      stdio: "inherit",
+    });
+    console.log("数据已更新（JSON + 数据库），刷新浏览器即可看到变化");
   }
 }
 
