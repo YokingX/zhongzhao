@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { filterScoreRecords, getDistricts, getScoreYears } from "@/lib/schools";
 import { ScoreTable, ScoreFilter } from "@/components/scores/ScoreTable";
+import { DataDisclaimer } from "@/components/layout/DataDisclaimer";
 
 export const metadata: Metadata = {
   title: "分数线查询",
@@ -34,7 +35,7 @@ export default async function ScoresPage({ searchParams }: PageProps) {
       <div className="mb-8">
         <h1 className="mb-2 text-3xl font-bold">分数线查询</h1>
         <p className="text-muted-foreground">
-          查询北京市高中学校历年录取分数线，数据仅供参考，以官方发布为准。
+          查询北京市高中学校历年统招录取分数线及区排名。2025年满分510分，2024年满分670分，跨年不可直接比较绝对分值。
         </p>
       </div>
 
@@ -62,6 +63,8 @@ export default async function ScoresPage({ searchParams }: PageProps) {
           <ScoreTable records={records} />
         </div>
       </div>
+
+      <DataDisclaimer className="mt-8" />
     </div>
   );
 }

@@ -1,7 +1,8 @@
 import type { Metadata } from "next";
-import { filterSchools, getDistricts } from "@/lib/schools";
+import { filterSchools, getDistricts, getAllSchools, getSchoolsWithScores } from "@/lib/schools";
 import { SCHOOL_TYPES } from "@/types/school";
 import { SchoolCard, SchoolFilter } from "@/components/schools/SchoolCard";
+import { DataDisclaimer } from "@/components/layout/DataDisclaimer";
 
 export const metadata: Metadata = {
   title: "学校库",
@@ -13,6 +14,7 @@ interface PageProps {
     district?: string;
     type?: string;
     query?: string;
+    hasScores?: string;
   }>;
 }
 
@@ -22,15 +24,19 @@ export default async function SchoolsPage({ searchParams }: PageProps) {
     district: params.district,
     type: params.type,
     query: params.query,
+    hasScores: params.hasScores === "1",
   });
   const districts = getDistricts();
+  const total = getAllSchools().length;
+  const withScores = getSchoolsWithScores();
 
   return (
     <div className="mx-auto max-w-6xl px-4 py-8">
       <div className="mb-8">
         <h1 className="mb-2 text-3xl font-bold">学校库</h1>
         <p className="text-muted-foreground">
-          收录北京市 {schools.length} 所高中学校信息，支持按行政区和学校类型筛选。
+          收录北京市教委公示的 {total} 所普通高中（含示范性高中和重点校），
+          其中 {withScores} 所有历年统招分数线数据。支持按行政区和学校类型筛选。
         </p>
       </div>
 
@@ -44,6 +50,7 @@ export default async function SchoolsPage({ searchParams }: PageProps) {
               currentDistrict={params.district}
               currentType={params.type}
               currentQuery={params.query}
+              currentHasScores={params.hasScores}
             />
           </div>
         </aside>
@@ -62,6 +69,8 @@ export default async function SchoolsPage({ searchParams }: PageProps) {
           )}
         </div>
       </div>
+
+      <DataDisclaimer className="mt-8" />
     </div>
   );
 }

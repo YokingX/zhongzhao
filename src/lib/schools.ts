@@ -1,4 +1,4 @@
-import { School, ScoreLine, AdmissionBatch } from "@/types/school";
+import { School, ScoreLine, AdmissionBatch, SCORE_SCALES } from "@/types/school";
 import schoolsData from "@/data/schools.json";
 
 const schools = schoolsData as School[];
@@ -15,8 +15,12 @@ export function filterSchools(options: {
   district?: string;
   type?: string;
   query?: string;
+  hasScores?: boolean;
 }): School[] {
   return schools.filter((school) => {
+    if (options.hasScores && school.scoreLines.length === 0) {
+      return false;
+    }
     if (options.district && options.district !== "全部" && school.district !== options.district) {
       return false;
     }
@@ -44,6 +48,8 @@ export interface ScoreRecord {
   year: number;
   batch: AdmissionBatch;
   minScore: number;
+  maxScore?: number;
+  districtRank?: number;
   note?: string;
 }
 
@@ -60,6 +66,8 @@ export function getAllScoreRecords(): ScoreRecord[] {
         year: line.year,
         batch: line.batch,
         minScore: line.minScore,
+        maxScore: line.maxScore,
+        districtRank: line.districtRank,
         note: line.note,
       });
     }
@@ -110,6 +118,15 @@ export function getLatestScore(school: School, batch: AdmissionBatch = "统一�
 
 export function getDistricts(): string[] {
   return [...new Set(schools.map((s) => s.district))].sort();
+}
+
+export function formatScore(score: number, year: number): string {
+  const max = SCORE_SCALES[year];
+  return max ? `${score}/${max}` : `${score}`;
+}
+
+export function getSchoolsWithScores(): number {
+  return schools.filter((s) => s.scoreLines.length > 0).length;
 }
 
 export function getScoreYears(): number[] {

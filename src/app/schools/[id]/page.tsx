@@ -2,9 +2,10 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ArrowLeft } from "lucide-react";
-import { getAllSchools, getSchoolById } from "@/lib/schools";
+import { getAllSchools, getSchoolById, formatScore } from "@/lib/schools";
 import { SchoolDetailInfo } from "@/components/schools/SchoolCard";
 import { ScoreChart } from "@/components/scores/ScoreTable";
+import { DataDisclaimer } from "@/components/layout/DataDisclaimer";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 interface PageProps {
@@ -78,31 +79,41 @@ export default async function SchoolDetailPage({ params }: PageProps) {
               <CardTitle>历年录取分数线</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="space-y-3">
-                {school.scoreLines
-                  .sort((a, b) => b.year - a.year || b.minScore - a.minScore)
-                  .map((line, i) => (
-                    <div
-                      key={`${line.year}-${line.batch}-${i}`}
-                      className="flex items-center justify-between border-b border-border pb-2 last:border-0"
-                    >
-                      <div>
-                        <div className="text-sm font-medium">{line.year}年</div>
-                        <div className="text-xs text-muted-foreground">{line.batch}</div>
+              {school.scoreLines.length === 0 ? (
+                <p className="text-sm text-muted-foreground">暂无公开统招录取分数线数据</p>
+              ) : (
+                <div className="space-y-3">
+                  {school.scoreLines
+                    .sort((a, b) => b.year - a.year || b.minScore - a.minScore)
+                    .map((line, i) => (
+                      <div
+                        key={`${line.year}-${line.batch}-${i}`}
+                        className="flex items-center justify-between border-b border-border pb-2 last:border-0"
+                      >
+                        <div>
+                          <div className="text-sm font-medium">{line.year}年</div>
+                          <div className="text-xs text-muted-foreground">{line.batch}</div>
+                        </div>
+                        <div className="text-right">
+                          <div className="text-lg font-bold text-primary">
+                            {formatScore(line.minScore, line.year)}
+                          </div>
+                          {line.districtRank && (
+                            <div className="text-xs text-muted-foreground">
+                              区排 {line.districtRank}
+                            </div>
+                          )}
+                        </div>
                       </div>
-                      <div className="text-right">
-                        <div className="text-lg font-bold text-primary">{line.minScore}</div>
-                        {line.note && (
-                          <div className="text-xs text-muted-foreground">{line.note}</div>
-                        )}
-                      </div>
-                    </div>
-                  ))}
-              </div>
+                    ))}
+                </div>
+              )}
             </CardContent>
           </Card>
         </div>
       </div>
+
+      <DataDisclaimer className="mt-8" />
     </div>
   );
 }

@@ -3,7 +3,7 @@ import { School, BarChart3, BookOpen, ClipboardList, Calendar, ArrowRight } from
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { getAllSchools } from "@/lib/schools";
+import { getAllSchools, getSchoolsWithScores } from "@/lib/schools";
 import { getAllPolicies } from "@/lib/policies";
 
 function getDaysUntil(dateStr: string): number {
@@ -53,6 +53,7 @@ const keyDates = [
 
 export default function HomePage() {
   const schools = getAllSchools();
+  const withScores = getSchoolsWithScores();
   const policies = getAllPolicies().slice(0, 3);
   const zhongkaoDays = getDaysUntil("2026-06-24");
   const volunteerDays = getDaysUntil("2026-07-13");
@@ -82,7 +83,11 @@ export default function HomePage() {
             </div>
             <div className="rounded-xl bg-white/10 px-6 py-4 backdrop-blur">
               <div className="text-3xl font-bold">{schools.length}</div>
-              <div className="text-sm text-blue-100">收录学校（所）</div>
+              <div className="text-sm text-blue-100">收录普高（所）</div>
+            </div>
+            <div className="rounded-xl bg-white/10 px-6 py-4 backdrop-blur">
+              <div className="text-3xl font-bold">{withScores}</div>
+              <div className="text-sm text-blue-100">有分数线（所）</div>
             </div>
           </div>
         </div>

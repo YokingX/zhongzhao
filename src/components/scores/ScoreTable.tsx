@@ -34,8 +34,8 @@ export function ScoreTable({ records }: ScoreTableProps) {
             <th className="px-4 py-3 text-left font-medium">行政区</th>
             <th className="px-4 py-3 text-left font-medium">年份</th>
             <th className="px-4 py-3 text-left font-medium">批次</th>
-            <th className="px-4 py-3 text-right font-medium">最低分</th>
-            <th className="px-4 py-3 text-left font-medium">备注</th>
+            <th className="px-4 py-3 text-right font-medium">分数线</th>
+            <th className="px-4 py-3 text-right font-medium">区排名</th>
           </tr>
         </thead>
         <tbody>
@@ -48,8 +48,14 @@ export function ScoreTable({ records }: ScoreTableProps) {
               <td className="px-4 py-3">{record.district}</td>
               <td className="px-4 py-3">{record.year}</td>
               <td className="px-4 py-3">{record.batch}</td>
-              <td className="px-4 py-3 text-right font-semibold text-primary">{record.minScore}</td>
-              <td className="px-4 py-3 text-muted-foreground">{record.note || "—"}</td>
+              <td className="px-4 py-3 text-right font-semibold text-primary">
+                {record.maxScore
+                  ? `${record.minScore}/${record.maxScore}`
+                  : record.minScore}
+              </td>
+              <td className="px-4 py-3 text-right text-muted-foreground">
+                {record.districtRank ?? "—"}
+              </td>
             </tr>
           ))}
         </tbody>
@@ -59,7 +65,7 @@ export function ScoreTable({ records }: ScoreTableProps) {
 }
 
 interface ScoreChartProps {
-  scoreLines: { year: number; minScore: number; batch: AdmissionBatch }[];
+  scoreLines: { year: number; minScore: number; maxScore?: number; batch: AdmissionBatch }[];
   batch?: AdmissionBatch;
 }
 
@@ -67,7 +73,11 @@ export function ScoreChart({ scoreLines, batch = "统一招生" }: ScoreChartPro
   const data = scoreLines
     .filter((l) => l.batch === batch)
     .sort((a, b) => a.year - b.year)
-    .map((l) => ({ year: String(l.year), score: l.minScore }));
+    .map((l) => ({
+      year: String(l.year),
+      score: l.minScore,
+      label: l.maxScore ? `${l.minScore}/${l.maxScore}` : String(l.minScore),
+    }));
 
   if (data.length === 0) return null;
 
@@ -79,7 +89,10 @@ export function ScoreChart({ scoreLines, batch = "统一招生" }: ScoreChartPro
           <XAxis dataKey="year" tick={{ fontSize: 12 }} />
           <YAxis domain={["dataMin - 10", "dataMax + 5"]} tick={{ fontSize: 12 }} />
           <Tooltip
-            formatter={(value) => [`${value}分`, "最低录取线"]}
+            formatter={(value, _name, props) => {
+              const payload = props?.payload as { label?: string } | undefined;
+              return [`${payload?.label ?? value}分`, "统招最低线"];
+            }}
             labelFormatter={(label) => `${label}年`}
           />
           <Line

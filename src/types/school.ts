@@ -5,8 +5,18 @@ export interface ScoreLine {
   year: number;
   batch: AdmissionBatch;
   minScore: number;
+  maxScore?: number;
+  districtRank?: number;
   note?: string;
+  source?: string;
 }
+
+export const SCORE_SCALES: Record<number, number> = {
+  2022: 660,
+  2023: 660,
+  2024: 670,
+  2025: 510,
+};
 
 export interface School {
   id: string;
@@ -14,12 +24,13 @@ export interface School {
   shortName: string;
   district: string;
   type: SchoolType;
-  address: string;
+  address?: string;
   website?: string;
   description: string;
   features: string[];
   admissionTypes: AdmissionBatch[];
   scoreLines: ScoreLine[];
+  isKeySchool?: boolean;
 }
 
 export interface TimelineEvent {
