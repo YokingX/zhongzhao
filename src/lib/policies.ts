@@ -3,6 +3,7 @@ import policiesData from "@/data/policies.json";
 
 export interface PolicyArticle extends PolicyMeta {
   content: string;
+  html: string;
 }
 
 const policies = policiesData as PolicyArticle[];
@@ -15,11 +16,11 @@ export function getPolicyCategories(): string[] {
   return [...new Set(policies.map((p) => p.category))].sort();
 }
 
-export function getPolicyBySlug(slug: string): { meta: PolicyMeta; content: string } | null {
+export function getPolicyBySlug(slug: string): { meta: PolicyMeta; content: string; html: string } | null {
   const article = policies.find((p) => p.slug === slug);
   if (!article) return null;
-  const { content, ...meta } = article;
-  return { meta, content };
+  const { content, html, ...meta } = article;
+  return { meta, content, html };
 }
 
 export function getAllPolicySlugs(): string[] {

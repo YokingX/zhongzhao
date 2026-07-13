@@ -67,7 +67,7 @@ export default async function PolicyDetailPage({ params }: PageProps) {
           </div>
         </header>
 
-        <PolicyContent source={policy.content} />
+        <PolicyContent html={policy.html} />
 
         <footer className="mt-12 rounded-lg border border-border bg-muted/50 p-4 text-sm text-muted-foreground">
           本文内容基于北京教育考试院公开政策文件整理解读，仅供参考，具体政策以
