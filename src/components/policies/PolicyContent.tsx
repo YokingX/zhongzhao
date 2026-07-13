@@ -26,6 +26,21 @@ const components = {
   blockquote: (props: HTMLAttributes<HTMLQuoteElement>) => (
     <blockquote className="my-4 border-l-4 border-primary bg-secondary/50 py-2 pl-4 italic text-slate-600" {...props} />
   ),
+  table: (props: HTMLAttributes<HTMLTableElement>) => (
+    <div className="my-6 overflow-x-auto rounded-lg border border-border">
+      <table className="w-full text-sm" {...props} />
+    </div>
+  ),
+  thead: (props: HTMLAttributes<HTMLTableSectionElement>) => (
+    <thead className="bg-muted/50" {...props} />
+  ),
+  th: (props: HTMLAttributes<HTMLTableCellElement>) => (
+    <th className="border-b border-border px-4 py-2 text-left font-medium" {...props} />
+  ),
+  td: (props: HTMLAttributes<HTMLTableCellElement>) => (
+    <td className="border-b border-border px-4 py-2" {...props} />
+  ),
+  hr: () => <hr className="my-8 border-border" />,
 };
 
 export function PolicyContent({ source }: { source: string }) {

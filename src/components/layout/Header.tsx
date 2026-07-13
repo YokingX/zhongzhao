@@ -35,7 +35,8 @@ export function Header() {
               href={item.href}
               className={cn(
                 "rounded-lg px-3 py-2 text-sm font-medium transition-colors hover:bg-muted",
-                pathname === item.href
+                pathname === item.href ||
+                  (item.href !== "/" && pathname.startsWith(`${item.href}/`))
                   ? "bg-secondary text-secondary-foreground"
                   : "text-muted-foreground"
               )}
