@@ -6,6 +6,12 @@ import { ScoreTable } from "@/components/scores/ScoreTable";
 import { ScoreFilter } from "@/components/scores/ScoreFilter";
 import { DataDisclaimer } from "@/components/layout/DataDisclaimer";
 import { Button } from "@/components/ui/button";
+import {
+  firstParam,
+  normalizeDistrict,
+  parseOptionalNumber,
+  parsePage,
+} from "@/lib/search-params";
 
 export const metadata: Metadata = {
   title: "分数线查询",
@@ -14,13 +20,13 @@ export const metadata: Metadata = {
 
 interface PageProps {
   searchParams: Promise<{
-    district?: string;
-    batch?: string;
-    year?: string;
-    query?: string;
-    minScore?: string;
-    maxScore?: string;
-    page?: string;
+    district?: string | string[];
+    batch?: string | string[];
+    year?: string | string[];
+    query?: string | string[];
+    minScore?: string | string[];
+    maxScore?: string | string[];
+    page?: string | string[];
   }>;
 }
 
@@ -37,55 +43,62 @@ function buildPageUrl(params: Record<string, string | undefined>, page: number):
   return qs ? `/scores?${qs}` : "/scores";
 }
 
-function parseOptionalNumber(value: string | undefined): number | undefined {
-  if (value == null || value === "") return undefined;
-  const n = Number(value);
-  return Number.isFinite(n) ? n : undefined;
-}
-
 export default async function ScoresPage({ searchParams }: PageProps) {
-  const params = await searchParams;
-  const page = Math.max(1, Number(params.page) || 1);
+  const raw = await searchParams;
+  const page = parsePage(firstParam(raw.page));
+  const district = normalizeDistrict(firstParam(raw.district));
+  const batch = firstParam(raw.batch);
+  const yearRaw = firstParam(raw.year);
+  const query = firstParam(raw.query);
+  const minScore = firstParam(raw.minScore);
+  const maxScore = firstParam(raw.maxScore);
 
   const [years, districts] = await Promise.all([getScoreYears(), getDistricts()]);
   const latestYear = years[0];
 
-  const displayYear = params.year ?? (latestYear != null ? String(latestYear) : "全部");
-  const displayBatch = params.batch ?? "统一招生";
+  const displayYear = yearRaw ?? (latestYear != null ? String(latestYear) : "全部");
+  const displayBatch = batch ?? "统一招生";
 
   const effectiveYear =
-    params.year === undefined
+    yearRaw === undefined
       ? latestYear
-      : params.year === "全部"
+      : yearRaw === "全部"
         ? undefined
-        : Number(params.year);
+        : Number(yearRaw);
   const effectiveBatch =
-    params.batch === undefined
+    batch === undefined
       ? "统一招生"
-      : params.batch === "全部"
+      : batch === "全部"
         ? undefined
-        : params.batch;
+        : batch;
 
-  const filterInput = {
-    district: params.district,
-    batch: effectiveBatch,
-    year: effectiveYear,
-    query: params.query,
-    minScore: parseOptionalNumber(params.minScore),
-    maxScore: parseOptionalNumber(params.maxScore),
-    page,
+  const urlParams = {
+    district,
+    batch: batch ?? undefined,
+    year: yearRaw,
+    query,
+    minScore,
+    maxScore,
   };
 
-  const { records, total, pageSize } = await filterScoreRecords(filterInput);
+  const { records, total, pageSize } = await filterScoreRecords({
+    district,
+    batch: effectiveBatch,
+    year: effectiveYear,
+    query,
+    minScore: parseOptionalNumber(minScore),
+    maxScore: parseOptionalNumber(maxScore),
+    page,
+  });
+
   const totalPages = Math.max(1, Math.ceil(total / pageSize));
 
   if (total > 0 && page > totalPages) {
-    redirect(buildPageUrl(params, totalPages));
+    redirect(buildPageUrl(urlParams, totalPages));
   }
 
-  const safePage = page;
-  const from = total === 0 ? 0 : (safePage - 1) * pageSize + 1;
-  const to = Math.min(safePage * pageSize, total);
+  const from = total === 0 ? 0 : (page - 1) * pageSize + 1;
+  const to = Math.min(page * pageSize, total);
 
   return (
     <div className="mx-auto max-w-6xl px-4 py-8">
@@ -94,7 +107,7 @@ export default async function ScoresPage({ searchParams }: PageProps) {
         <p className="text-muted-foreground">
           查询北京市高中学校历年统招录取分数线及区排名。2025年满分510分，2024年满分670分，跨年不可直接比较绝对分值。
         </p>
-        {params.year === undefined && params.batch === undefined && latestYear != null && (
+        {yearRaw === undefined && batch === undefined && latestYear != null && (
           <p className="mt-2 text-sm text-muted-foreground">
             默认展示 {latestYear} 年「统一招生」批次；可在左侧筛选查看其他年份或批次。
           </p>
@@ -108,12 +121,12 @@ export default async function ScoresPage({ searchParams }: PageProps) {
             <ScoreFilter
               districts={districts}
               years={years}
-              currentDistrict={params.district}
+              currentDistrict={district}
               currentBatch={displayBatch}
               currentYear={displayYear}
-              currentQuery={params.query}
-              currentMinScore={params.minScore}
-              currentMaxScore={params.maxScore}
+              currentQuery={query}
+              currentMinScore={minScore}
+              currentMaxScore={maxScore}
             />
           </div>
         </aside>
@@ -127,7 +140,7 @@ export default async function ScoresPage({ searchParams }: PageProps) {
             </span>
             {totalPages > 1 && (
               <span>
-                第 {safePage} / {totalPages} 页
+                第 {page} / {totalPages} 页
               </span>
             )}
           </div>
@@ -135,18 +148,18 @@ export default async function ScoresPage({ searchParams }: PageProps) {
 
           {totalPages > 1 && (
             <div className="mt-8 flex flex-wrap items-center justify-center gap-2">
-              {safePage > 1 ? (
+              {page > 1 ? (
                 <Button variant="outline" size="sm" asChild>
-                  <Link href={buildPageUrl(params, safePage - 1)}>上一页</Link>
+                  <Link href={buildPageUrl(urlParams, page - 1)}>上一页</Link>
                 </Button>
               ) : (
                 <Button variant="outline" size="sm" disabled>
                   上一页
                 </Button>
               )}
-              {safePage < totalPages ? (
+              {page < totalPages ? (
                 <Button variant="outline" size="sm" asChild>
-                  <Link href={buildPageUrl(params, safePage + 1)}>下一页</Link>
+                  <Link href={buildPageUrl(urlParams, page + 1)}>下一页</Link>
                 </Button>
               ) : (
                 <Button variant="outline" size="sm" disabled>

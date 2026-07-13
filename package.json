@@ -16,6 +16,7 @@
     "sync:data": "node scripts/sync-data.mjs",
     "audit:aliases": "node scripts/audit-aliases.mjs",
     "health:check": "node scripts/health-check.mjs",
+    "smoke:test": "node scripts/smoke-test.mjs",
     "push:gh": "node scripts/gh-push.mjs",
     "setup:github-network": "bash scripts/setup-github-network.sh",
     "watch:data": "node scripts/watch-data.mjs",

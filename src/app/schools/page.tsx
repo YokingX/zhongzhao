@@ -4,11 +4,14 @@ import { redirect } from "next/navigation";
 import { filterSchools, getDistrictSchoolCounts, getSchoolCounts } from "@/lib/schools";
 import { SCHOOL_TYPES } from "@/types/school";
 import { SchoolCard, SchoolFilter } from "@/components/schools/SchoolCard";
+import { SchoolDistrictGrid } from "@/components/schools/SchoolDistrictPicker";
+import { buildSchoolsUrl, type SchoolFilterParams } from "@/lib/schools-url";
 import {
-  SchoolDistrictGrid,
-  buildSchoolsUrl,
-  type SchoolFilterParams,
-} from "@/components/schools/SchoolDistrictPicker";
+  firstParam,
+  normalizeDistrict,
+  parseBooleanFlag,
+  parsePage,
+} from "@/lib/search-params";
 import { DataDisclaimer } from "@/components/layout/DataDisclaimer";
 import { Button } from "@/components/ui/button";
 
@@ -19,31 +22,31 @@ export const metadata: Metadata = {
 
 interface PageProps {
   searchParams: Promise<{
-    district?: string;
-    type?: string;
-    query?: string;
-    hasScores?: string;
-    page?: string;
+    district?: string | string[];
+    type?: string | string[];
+    query?: string | string[];
+    hasScores?: string | string[];
+    page?: string | string[];
   }>;
 }
 
 export default async function SchoolsPage({ searchParams }: PageProps) {
-  const params = await searchParams;
-  const page = Math.max(1, Number(params.page) || 1);
+  const raw = await searchParams;
+  const district = normalizeDistrict(firstParam(raw.district));
+  const type = firstParam(raw.type);
+  const query = firstParam(raw.query);
+  const hasScores = parseBooleanFlag(firstParam(raw.hasScores));
+  const page = parsePage(firstParam(raw.page));
+
   const filterParams: SchoolFilterParams = {
-    district: params.district,
-    type: params.type,
-    query: params.query,
-    hasScores: params.hasScores,
+    district,
+    type,
+    query,
+    hasScores: hasScores ? "1" : undefined,
+    page: page > 1 ? String(page) : undefined,
   };
 
-  const filterInput = {
-    district: params.district,
-    type: params.type,
-    query: params.query,
-    hasScores: params.hasScores === "1",
-    page,
-  };
+  const filterInput = { district, type, query, hasScores, page };
 
   const [{ schools, total, pageSize }, districtCounts, { total: allTotal, withScores }] =
     await Promise.all([
@@ -67,31 +70,31 @@ export default async function SchoolsPage({ searchParams }: PageProps) {
         <h1 className="mb-2 text-3xl font-bold">学校库</h1>
         <p className="text-muted-foreground">
           收录北京市教委公示的 {allTotal} 所普通高中（含示范性高中和重点校），
-          其中 {withScores} 所有历年统招分数线数据。点击下方行政区卡片进入对应学校列表。
+          其中 {withScores} 所有历年统招分数线数据。点击下方行政区卡片查看对应学校。
         </p>
       </div>
 
       <div className="mb-8">
         <SchoolFilter
           types={SCHOOL_TYPES}
-          currentDistrict={params.district}
-          currentType={params.type}
-          currentQuery={params.query}
-          currentHasScores={params.hasScores}
+          currentDistrict={district}
+          currentType={type}
+          currentQuery={query}
+          currentHasScores={hasScores ? "1" : undefined}
         />
       </div>
 
       <SchoolDistrictGrid
         districtCounts={districtCounts}
         totalCount={allTotal}
-        currentDistrict={params.district}
+        currentDistrict={district}
         filterParams={filterParams}
       />
 
-      <section>
+      <section id="school-list" className="scroll-mt-24">
         <div className="mb-4 flex flex-wrap items-center justify-between gap-2">
           <h2 className="text-lg font-semibold">
-            {params.district ? `${params.district}区学校` : "全部学校"}
+            {district ? `${district}区学校` : "全部学校"}
           </h2>
           <span className="text-sm text-muted-foreground">
             {total === 0
@@ -105,7 +108,7 @@ export default async function SchoolsPage({ searchParams }: PageProps) {
           <div className="rounded-xl border border-border bg-card p-12 text-center text-muted-foreground">
             <p className="mb-4">没有找到匹配的学校</p>
             <Button variant="outline" size="sm" asChild>
-              <Link href="/schools">查看全部学校</Link>
+              <Link href="/schools">返回全部行政区</Link>
             </Button>
           </div>
         ) : (

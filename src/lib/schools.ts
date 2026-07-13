@@ -10,6 +10,7 @@ import schoolsData from "@/data/schools.json";
 import { formatScore, getLatestScore } from "@/lib/school-utils";
 import { matchesSchoolQuery } from "@/lib/pinyin";
 import { SCORES_PAGE_SIZE, SCHOOLS_PAGE_SIZE } from "@/lib/d1-limits";
+import { normalizeDistrict } from "@/lib/search-params";
 
 export { formatScore, getLatestScore };
 export { SCORES_PAGE_SIZE, SCHOOLS_PAGE_SIZE };
@@ -123,6 +124,7 @@ export const filterSchools = cache(
     const pageSize = options.pageSize ?? SCHOOLS_PAGE_SIZE;
     const page = Math.max(1, options.page ?? 1);
     const offset = (page - 1) * pageSize;
+    const district = normalizeDistrict(options.district);
     const schoolIds = options.query ? await resolveSchoolIdsByQuery(options.query) : undefined;
     if (options.query && schoolIds?.length === 0) {
       return { schools: [], total: 0, page, pageSize };
@@ -132,7 +134,7 @@ export const filterSchools = cache(
     if (d1) {
       const { querySchoolsForListD1, countSchoolsD1 } = await import("@/db/d1-queries");
       const filter = {
-        district: options.district,
+        district,
         type: options.type,
         hasScores: options.hasScores,
         schoolIds,
@@ -146,8 +148,7 @@ export const filterSchools = cache(
 
     const filtered = loadSchoolsFromJson().filter((school) => {
       if (options.hasScores && school.scoreLines.length === 0) return false;
-      if (options.district && options.district !== "全部" && school.district !== options.district)
-        return false;
+      if (district && school.district !== district) return false;
       if (options.type && options.type !== "全部" && school.type !== options.type) return false;
       if (options.query) {
         return matchesSchoolQuery(options.query, {
@@ -197,20 +198,21 @@ export const filterScoreRecords = cache(
     const pageSize = options.pageSize ?? SCORES_PAGE_SIZE;
     const page = Math.max(1, options.page ?? 1);
     const offset = (page - 1) * pageSize;
+    const district = normalizeDistrict(options.district);
 
     const schoolIds = options.query ? await resolveSchoolIdsByQuery(options.query) : undefined;
     if (options.query && schoolIds?.length === 0) {
       return { records: [], total: 0, page, pageSize };
     }
 
-    const filter = {
-      district: options.district,
-      batch: options.batch,
-      year: options.year,
-      minScore: options.minScore,
-      maxScore: options.maxScore,
-      schoolIds,
-    };
+      const filter = {
+        district,
+        batch: options.batch,
+        year: options.year,
+        minScore: options.minScore,
+        maxScore: options.maxScore,
+        schoolIds,
+      };
 
     const d1 = await getD1();
     if (d1) {
@@ -243,8 +245,7 @@ export const filterScoreRecords = cache(
     }
     const filtered = allRecords
       .filter((record) => {
-        if (options.district && options.district !== "全部" && record.district !== options.district)
-          return false;
+        if (district && record.district !== district) return false;
         if (options.batch && options.batch !== "全部" && record.batch !== options.batch) return false;
         if (options.year != null && record.year !== options.year) return false;
         if (options.minScore != null && record.minScore < options.minScore) return false;

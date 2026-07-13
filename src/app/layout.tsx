@@ -1,4 +1,5 @@
 import type { Metadata, Viewport } from "next";
+import { Suspense } from "react";
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
 import { InAppBrowserGuide } from "@/components/layout/InAppBrowserGuide";
@@ -63,7 +64,9 @@ export default function RootLayout({
         <Header />
         <main className="main-with-mobile-nav min-h-[calc(100vh-8rem)]">{children}</main>
         <Footer />
-        <MobileBottomNav />
+        <Suspense fallback={null}>
+          <MobileBottomNav />
+        </Suspense>
       </body>
     </html>
   );
