@@ -1,34 +1,44 @@
 import { PolicyMeta } from "@/types/school";
-import policiesData from "@/data/policies.json";
+import policyIndex from "@/data/policies-index.json";
 
 export interface PolicyArticle extends PolicyMeta {
   content: string;
   html: string;
+  readingMinutes?: number;
 }
 
-const policies = policiesData as PolicyArticle[];
+type PolicyIndexItem = PolicyMeta & { readingMinutes?: number };
+
+const index = policyIndex as PolicyIndexItem[];
 
 export function getAllPolicies(): PolicyMeta[] {
-  return policies.map(({ content: _c, ...meta }) => meta);
+  return index;
 }
 
 export function getPolicyCategories(): string[] {
-  return [...new Set(policies.map((p) => p.category))].sort();
+  return [...new Set(index.map((p) => p.category))].sort();
 }
 
-export function getPolicyBySlug(slug: string): { meta: PolicyMeta; content: string; html: string } | null {
-  const article = policies.find((p) => p.slug === slug);
-  if (!article) return null;
-  const { content, html, ...meta } = article;
-  return { meta, content, html };
+export async function getPolicyBySlug(
+  slug: string
+): Promise<{ meta: PolicyIndexItem; content: string; html: string } | null> {
+  const meta = index.find((p) => p.slug === slug);
+  if (!meta) return null;
+  try {
+    const mod = await import(`@/data/policies/${slug}.json`);
+    const data = mod.default as { content: string; html: string };
+    return { meta, content: data.content, html: data.html };
+  } catch {
+    return null;
+  }
 }
 
 export function getAllPolicySlugs(): string[] {
-  return policies.map((p) => p.slug);
+  return index.map((p) => p.slug);
 }
 
 export function getRelatedPolicies(slug: string, limit = 3): PolicyMeta[] {
-  const current = policies.find((p) => p.slug === slug);
+  const current = index.find((p) => p.slug === slug);
   if (!current) return [];
   return getAllPolicies()
     .filter((p) => p.slug !== slug && p.category === current.category)
@@ -36,7 +46,17 @@ export function getRelatedPolicies(slug: string, limit = 3): PolicyMeta[] {
 }
 
 export function getFeaturedPolicy(): PolicyMeta | undefined {
-  return (
-    getAllPolicies().find((p) => p.slug === "2026-policy-overview") ?? getAllPolicies()[0]
-  );
+  return index.find((p) => p.slug === "2026-policy-overview") ?? index[0];
+}
+
+export function getPolicyNeighbors(slug: string): {
+  prev: PolicyMeta | null;
+  next: PolicyMeta | null;
+} {
+  const i = index.findIndex((p) => p.slug === slug);
+  if (i < 0) return { prev: null, next: null };
+  return {
+    prev: i > 0 ? index[i - 1] : null,
+    next: i < index.length - 1 ? index[i + 1] : null,
+  };
 }

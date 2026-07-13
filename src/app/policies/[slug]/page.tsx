@@ -2,10 +2,17 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ArrowLeft, ArrowRight } from "lucide-react";
-import { getPolicyBySlug, getAllPolicySlugs, getRelatedPolicies, getAllPolicies } from "@/lib/policies";
+import {
+  getPolicyBySlug,
+  getAllPolicySlugs,
+  getRelatedPolicies,
+  getPolicyNeighbors,
+} from "@/lib/policies";
 import { PolicyContent } from "@/components/policies/PolicyContent";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+
+export const dynamic = "force-static";
 
 interface PageProps {
   params: Promise<{ slug: string }>;
@@ -17,7 +24,7 @@ export function generateStaticParams() {
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const { slug } = await params;
-  const policy = getPolicyBySlug(slug);
+  const policy = await getPolicyBySlug(slug);
   if (!policy) return { title: "文章未找到" };
   return {
     title: policy.meta.title,
@@ -26,22 +33,14 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   };
 }
 
-function estimateReadingMinutes(content: string): number {
-  const chars = content.replace(/\s/g, "").length;
-  return Math.max(1, Math.ceil(chars / 400));
-}
-
 export default async function PolicyDetailPage({ params }: PageProps) {
   const { slug } = await params;
-  const policy = getPolicyBySlug(slug);
+  const policy = await getPolicyBySlug(slug);
   if (!policy) notFound();
 
-  const all = getAllPolicies();
-  const index = all.findIndex((p) => p.slug === slug);
-  const prev = index > 0 ? all[index - 1] : null;
-  const next = index < all.length - 1 ? all[index + 1] : null;
+  const { prev, next } = getPolicyNeighbors(slug);
   const related = getRelatedPolicies(slug);
-  const readingMin = estimateReadingMinutes(policy.content);
+  const readingMin = policy.meta.readingMinutes ?? 3;
 
   return (
     <div className="mx-auto max-w-3xl px-4 py-8">
