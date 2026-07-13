@@ -5,7 +5,7 @@ import { filterSchools, getDistrictSchoolCounts, getSchoolCounts } from "@/lib/s
 import { SCHOOL_TYPES } from "@/types/school";
 import { SchoolCard, SchoolFilter } from "@/components/schools/SchoolCard";
 import {
-  SchoolDistrictPicker,
+  SchoolDistrictGrid,
   buildSchoolsUrl,
   type SchoolFilterParams,
 } from "@/components/schools/SchoolDistrictPicker";
@@ -67,98 +67,82 @@ export default async function SchoolsPage({ searchParams }: PageProps) {
         <h1 className="mb-2 text-3xl font-bold">学校库</h1>
         <p className="text-muted-foreground">
           收录北京市教委公示的 {allTotal} 所普通高中（含示范性高中和重点校），
-          其中 {withScores} 所有历年统招分数线数据。点击上方行政区即可快速筛选。
+          其中 {withScores} 所有历年统招分数线数据。点击下方行政区卡片进入对应学校列表。
         </p>
       </div>
 
-      <SchoolDistrictPicker
+      <div className="mb-8">
+        <SchoolFilter
+          types={SCHOOL_TYPES}
+          currentDistrict={params.district}
+          currentType={params.type}
+          currentQuery={params.query}
+          currentHasScores={params.hasScores}
+        />
+      </div>
+
+      <SchoolDistrictGrid
         districtCounts={districtCounts}
         totalCount={allTotal}
         currentDistrict={params.district}
         filterParams={filterParams}
       />
 
-      {params.district && (
-        <p className="mb-4 text-sm text-muted-foreground">
-          当前浏览：<span className="font-medium text-foreground">{params.district}区</span>
-          {params.type && params.type !== "全部" && (
-            <span> · {params.type}</span>
-          )}
-          {params.hasScores === "1" && <span> · 仅有分数线</span>}
-        </p>
-      )}
+      <section>
+        <div className="mb-4 flex flex-wrap items-center justify-between gap-2">
+          <h2 className="text-lg font-semibold">
+            {params.district ? `${params.district}区学校` : "全部学校"}
+          </h2>
+          <span className="text-sm text-muted-foreground">
+            {total === 0
+              ? "共 0 所"
+              : `显示 ${from}–${to} / 共 ${total} 所`}
+            {totalPages > 1 && ` · 第 ${page}/${totalPages} 页`}
+          </span>
+        </div>
 
-      <div className="grid gap-8 lg:grid-cols-4">
-        <aside className="lg:col-span-1">
-          <div className="sticky top-20 rounded-xl border border-border bg-card p-4">
-            <h2 className="mb-4 font-semibold">搜索与类型</h2>
-            <SchoolFilter
-              types={SCHOOL_TYPES}
-              currentDistrict={params.district}
-              currentType={params.type}
-              currentQuery={params.query}
-              currentHasScores={params.hasScores}
-            />
+        {schools.length === 0 ? (
+          <div className="rounded-xl border border-border bg-card p-12 text-center text-muted-foreground">
+            <p className="mb-4">没有找到匹配的学校</p>
+            <Button variant="outline" size="sm" asChild>
+              <Link href="/schools">查看全部学校</Link>
+            </Button>
           </div>
-        </aside>
+        ) : (
+          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            {schools.map((school) => (
+              <SchoolCard key={school.id} school={school} />
+            ))}
+          </div>
+        )}
 
-        <div className="lg:col-span-3">
-          <div className="mb-4 flex flex-wrap items-center justify-between gap-2 text-sm text-muted-foreground">
-            <span>
-              {total === 0
-                ? "共 0 所学校"
-                : `显示 ${from}–${to} / 共 ${total} 所学校`}
-            </span>
-            {totalPages > 1 && (
-              <span>
-                第 {page} / {totalPages} 页
-              </span>
+        {totalPages > 1 && (
+          <div className="mt-8 flex flex-wrap items-center justify-center gap-2">
+            {page > 1 ? (
+              <Button variant="outline" size="sm" asChild>
+                <Link href={buildSchoolsUrl(filterParams, { page: String(page - 1) })}>
+                  上一页
+                </Link>
+              </Button>
+            ) : (
+              <Button variant="outline" size="sm" disabled>
+                上一页
+              </Button>
+            )}
+            {page < totalPages ? (
+              <Button variant="outline" size="sm" asChild>
+                <Link href={buildSchoolsUrl(filterParams, { page: String(page + 1) })}>
+                  下一页
+                </Link>
+              </Button>
+            ) : (
+              <Button variant="outline" size="sm" disabled>
+                下一页
+              </Button>
             )}
           </div>
-
-          {schools.length === 0 ? (
-            <div className="rounded-xl border border-border bg-card p-12 text-center text-muted-foreground">
-              <p className="mb-4">没有找到匹配的学校</p>
-              <Button variant="outline" size="sm" asChild>
-                <Link href="/schools">查看全部学校</Link>
-              </Button>
-            </div>
-          ) : (
-            <div className="grid gap-4 sm:grid-cols-2">
-              {schools.map((school) => (
-                <SchoolCard key={school.id} school={school} />
-              ))}
-            </div>
-          )}
-
-          {totalPages > 1 && (
-            <div className="mt-8 flex flex-wrap items-center justify-center gap-2">
-              {page > 1 ? (
-                <Button variant="outline" size="sm" asChild>
-                  <Link href={buildSchoolsUrl(filterParams, { page: String(page - 1) })}>
-                    上一页
-                  </Link>
-                </Button>
-              ) : (
-                <Button variant="outline" size="sm" disabled>
-                  上一页
-                </Button>
-              )}
-              {page < totalPages ? (
-                <Button variant="outline" size="sm" asChild>
-                  <Link href={buildSchoolsUrl(filterParams, { page: String(page + 1) })}>
-                    下一页
-                  </Link>
-                </Button>
-              ) : (
-                <Button variant="outline" size="sm" disabled>
-                  下一页
-                </Button>
-              )}
-            </div>
-          )}
-        </div>
-      </div>
+        )}
+      </section>
 
       <DataDisclaimer className="mt-8" />
     </div>

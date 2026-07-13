@@ -78,9 +78,13 @@ export function SchoolFilter({
   currentHasScores,
 }: SchoolFilterProps) {
   return (
-    <form className="space-y-4" action="/schools" method="get">
+    <form
+      className="flex flex-col gap-4 rounded-xl border border-border bg-card p-4 sm:flex-row sm:flex-wrap sm:items-end"
+      action="/schools"
+      method="get"
+    >
       {currentDistrict && <input type="hidden" name="district" value={currentDistrict} />}
-      <div>
+      <div className="min-w-0 flex-1 sm:min-w-[12rem]">
         <label htmlFor="query" className="mb-1.5 block text-sm font-medium">
           搜索学校
         </label>
@@ -89,45 +93,41 @@ export function SchoolFilter({
           name="query"
           type="search"
           defaultValue={currentQuery}
-          placeholder="输入学校名称或拼音首字母..."
-          className="flex h-10 w-full rounded-lg border border-input bg-card px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+          placeholder="学校名称或拼音首字母"
+          className="flex h-10 w-full rounded-lg border border-input bg-background px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
         />
       </div>
-      <div className="grid gap-4 sm:grid-cols-2">
-        <div>
-          <label htmlFor="type" className="mb-1.5 block text-sm font-medium">
-            学校类型
-          </label>
-          <select
-            id="type"
-            name="type"
-            defaultValue={currentType || "全部"}
-            className="flex h-10 w-full rounded-lg border border-input bg-card px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-          >
-            <option value="全部">全部</option>
-            {types.map((t) => (
-              <option key={t} value={t}>
-                {t}
-              </option>
-            ))}
-          </select>
-        </div>
-        <div className="flex items-end">
-          <label className="flex h-10 w-full items-center gap-2 rounded-lg border border-input bg-card px-3 text-sm">
-            <input
-              type="checkbox"
-              name="hasScores"
-              value="1"
-              defaultChecked={currentHasScores === "1"}
-              className="h-4 w-4 rounded border-input"
-            />
-            仅有分数线
-          </label>
-        </div>
+      <div className="w-full sm:w-40">
+        <label htmlFor="type" className="mb-1.5 block text-sm font-medium">
+          学校类型
+        </label>
+        <select
+          id="type"
+          name="type"
+          defaultValue={currentType || "全部"}
+          className="flex h-10 w-full rounded-lg border border-input bg-background px-3 py-2 text-sm"
+        >
+          <option value="全部">全部</option>
+          {types.map((t) => (
+            <option key={t} value={t}>
+              {t}
+            </option>
+          ))}
+        </select>
       </div>
+      <label className="flex h-10 shrink-0 items-center gap-2 rounded-lg border border-input bg-background px-3 text-sm sm:mb-0">
+        <input
+          type="checkbox"
+          name="hasScores"
+          value="1"
+          defaultChecked={currentHasScores === "1"}
+          className="h-4 w-4 rounded border-input"
+        />
+        仅有分数线
+      </label>
       <button
         type="submit"
-        className="inline-flex h-10 w-full items-center justify-center rounded-lg bg-primary px-4 text-sm font-medium text-primary-foreground hover:bg-primary/90 sm:w-auto"
+        className="inline-flex h-10 shrink-0 items-center justify-center rounded-lg bg-primary px-6 text-sm font-medium text-primary-foreground hover:bg-primary/90"
       >
         搜索
       </button>

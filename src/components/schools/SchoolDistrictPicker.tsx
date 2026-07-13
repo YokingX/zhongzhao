@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { MapPin } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 export interface SchoolFilterParams {
@@ -25,47 +26,71 @@ export function buildSchoolsUrl(
   return qs ? `/schools?${qs}` : "/schools";
 }
 
-interface SchoolDistrictPickerProps {
+interface SchoolDistrictGridProps {
   districtCounts: { district: string; count: number }[];
   totalCount: number;
   currentDistrict?: string;
   filterParams: SchoolFilterParams;
 }
 
-export function SchoolDistrictPicker({
+function DistrictCard({
+  href,
+  active,
+  title,
+  count,
+  subtitle,
+}: {
+  href: string;
+  active: boolean;
+  title: string;
+  count: number;
+  subtitle?: string;
+}) {
+  return (
+    <Link
+      href={href}
+      className={cn(
+        "flex flex-col rounded-xl border border-border bg-card p-4 transition-all hover:border-primary/40 hover:shadow-sm",
+        active && "border-primary bg-primary/5 ring-2 ring-primary/20"
+      )}
+    >
+      <div className="mb-2 flex items-center gap-1.5 text-muted-foreground">
+        <MapPin className="h-3.5 w-3.5 shrink-0" />
+        <span className="text-xs">{subtitle ?? "行政区"}</span>
+      </div>
+      <span className="text-base font-semibold leading-snug">{title}</span>
+      <span className="mt-1 text-sm text-muted-foreground">{count} 所学校</span>
+    </Link>
+  );
+}
+
+export function SchoolDistrictGrid({
   districtCounts,
   totalCount,
   currentDistrict,
   filterParams,
-}: SchoolDistrictPickerProps) {
-  const chipClass = (active: boolean) =>
-    cn(
-      "shrink-0 rounded-full px-3 py-1.5 text-sm transition-colors",
-      active
-        ? "bg-primary text-primary-foreground"
-        : "bg-muted text-muted-foreground hover:bg-muted/80"
-    );
-
+}: SchoolDistrictGridProps) {
   const baseParams = { ...filterParams, page: undefined };
 
   return (
-    <div className="mb-6">
-      <p className="mb-3 text-sm font-medium">按行政区浏览</p>
-      <div className="-mx-1 flex gap-2 overflow-x-auto px-1 pb-1 scrollbar-thin">
-        <Link
+    <div className="mb-8">
+      <h2 className="mb-4 text-lg font-semibold">选择行政区</h2>
+      <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
+        <DistrictCard
           href={buildSchoolsUrl(baseParams, { district: undefined })}
-          className={chipClass(!currentDistrict)}
-        >
-          全部 ({totalCount})
-        </Link>
+          active={!currentDistrict}
+          title="全部区域"
+          count={totalCount}
+          subtitle="北京市"
+        />
         {districtCounts.map(({ district, count }) => (
-          <Link
+          <DistrictCard
             key={district}
             href={buildSchoolsUrl(baseParams, { district })}
-            className={chipClass(currentDistrict === district)}
-          >
-            {district}区 ({count})
-          </Link>
+            active={currentDistrict === district}
+            title={`${district}区`}
+            count={count}
+          />
         ))}
       </div>
     </div>
