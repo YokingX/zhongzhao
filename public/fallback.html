@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#1d4ed8" />
+  <title>北京中考升学指导</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: system-ui, -apple-system, "PingFang SC", "Microsoft YaHei", sans-serif;
+      background: #f8fafc; color: #0f172a; line-height: 1.6; padding: 24px 16px 40px;
+      padding-bottom: calc(40px + env(safe-area-inset-bottom));
+    }
+    .card {
+      max-width: 420px; margin: 0 auto 16px; background: #fff; border: 1px solid #e2e8f0;
+      border-radius: 12px; padding: 20px;
+    }
+    h1 { font-size: 1.35rem; margin-bottom: 8px; color: #1d4ed8; }
+    p { font-size: 0.95rem; color: #475569; margin-bottom: 12px; }
+    .url {
+      word-break: break-all; background: #f1f5f9; padding: 10px 12px; border-radius: 8px;
+      font-size: 0.8rem; margin: 12px 0;
+    }
+    a.btn {
+      display: block; text-align: center; background: #1d4ed8; color: #fff;
+      text-decoration: none; padding: 12px 16px; border-radius: 10px; font-weight: 600;
+      margin-bottom: 10px;
+    }
+    a.link { color: #1d4ed8; text-decoration: none; font-weight: 500; }
+    ul { padding-left: 1.2rem; color: #475569; font-size: 0.9rem; }
+    li { margin-bottom: 6px; }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h1>北京中考升学指导</h1>
+    <p>页面加载异常时的备用入口。请使用系统浏览器打开完整网站。</p>
+    <div class="url" id="site-url">https://zhongzhao-web.zhaixiuchen.workers.dev</div>
+    <a class="btn" href="/">进入网站首页</a>
+    <a class="btn" href="/open" style="background:#eff6ff;color:#1d4ed8;">手机访问指南</a>
+  </div>
+  <div class="card">
+    <p><strong>微信内用户</strong></p>
+    <ul>
+      <li>点右上角「…」→「在浏览器中打开」</li>
+      <li>推荐使用 Chrome 或系统自带浏览器</li>
+    </ul>
+    <p style="margin-top:12px"><a class="link" href="/scores">分数线</a> · <a class="link" href="/schools">学校库</a> · <a class="link" href="/guide">填报攻略</a></p>
+  </div>
+  <script>
+    try {
+      document.getElementById("site-url").textContent = location.origin;
+      document.querySelectorAll("a[href^='/']").forEach(function (a) {
+        a.href = location.origin + a.getAttribute("href");
+      });
+    } catch (e) {}
+  </script>
+</body>
+</html>

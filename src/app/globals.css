@@ -49,6 +49,23 @@ body {
   background: var(--background);
   color: var(--foreground);
   font-family: system-ui, -apple-system, "Segoe UI", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+  -webkit-tap-highlight-color: transparent;
+  text-size-adjust: 100%;
+}
+
+.main-with-mobile-nav {
+  padding-bottom: calc(4.5rem + env(safe-area-inset-bottom, 0px));
+}
+
+@media (min-width: 768px) {
+  .main-with-mobile-nav {
+    padding-bottom: 0;
+  }
+}
+
+a,
+button {
+  touch-action: manipulation;
 }
 
 .prose h2 {

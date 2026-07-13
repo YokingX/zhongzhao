@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { School, BarChart3, BookOpen, ClipboardList, Calendar, ArrowRight } from "lucide-react";
+import { School, BarChart3, BookOpen, ClipboardList, Calendar, ArrowRight, Smartphone } from "lucide-react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -65,6 +65,13 @@ export default async function HomePage() {
           <Badge variant="secondary" className="mb-4 bg-white/20 text-white border-0">
             非官方参考平台
           </Badge>
+          <Link
+            href="/open"
+            className="mb-4 inline-flex items-center gap-1.5 rounded-full bg-white/15 px-3 py-1 text-xs text-white hover:bg-white/25 md:hidden"
+          >
+            <Smartphone className="h-3.5 w-3.5" />
+            安卓 / 微信用户访问指南
+          </Link>
           <h1 className="mb-4 text-3xl font-bold sm:text-4xl lg:text-5xl">
             北京中考升学指导
           </h1>

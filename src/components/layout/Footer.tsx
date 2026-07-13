@@ -40,7 +40,16 @@ export function Footer() {
           </div>
         </div>
         <div className="mt-8 border-t border-border pt-4 text-center text-xs text-muted-foreground">
-          © {new Date().getFullYear()} 北京中考升学指导 · 非北京教育考试院官方网站
+          <p>© {new Date().getFullYear()} 北京中考升学指导 · 非北京教育考试院官方网站</p>
+          <p className="mt-2">
+            <Link href="/open" className="text-primary hover:underline">
+              手机访问指南
+            </Link>
+            <span className="mx-2 text-border">·</span>
+            <a href="/fallback.html" className="text-primary hover:underline">
+              备用入口
+            </a>
+          </p>
         </div>
       </div>
     </footer>
