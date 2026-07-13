@@ -5,7 +5,10 @@ import { ArrowLeft } from "lucide-react";
 import { getAllSchools, getSchoolById } from "@/lib/schools";
 import { formatScore } from "@/lib/school-utils";
 import { SchoolDetailInfo } from "@/components/schools/SchoolCard";
+import { SchoolJsonLd } from "@/components/schools/SchoolJsonLd";
 import { ScoreChart } from "@/components/scores/ScoreTable";
+import { SITE_URL } from "@/lib/site";
+import { getLatestScore } from "@/lib/school-utils";
 import { DataDisclaimer } from "@/components/layout/DataDisclaimer";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
@@ -22,9 +25,20 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   const { id } = await params;
   const school = await getSchoolById(id);
   if (!school) return { title: "学校未找到" };
+  const latest = getLatestScore(school);
+  const scoreHint = latest
+    ? `${latest.year}年统招线 ${formatScore(latest.minScore, latest.year)}`
+    : "历年分数线";
   return {
-    title: school.name,
-    description: school.description,
+    title: `${school.name} - ${school.district}${school.type}`,
+    description: `${school.name}（${school.district}·${school.type}）：${school.description.slice(0, 80)}… ${scoreHint}。`,
+    keywords: [school.name, school.shortName, school.district, "北京中考", "录取分数线"],
+    openGraph: {
+      title: school.name,
+      description: school.description.slice(0, 120),
+      url: `${SITE_URL}/schools/${school.id}`,
+      type: "article",
+    },
   };
 }
 
@@ -38,7 +52,9 @@ export default async function SchoolDetailPage({ params }: PageProps) {
     .sort((a, b) => b.year - a.year);
 
   return (
-    <div className="mx-auto max-w-6xl px-4 py-8">
+    <>
+      <SchoolJsonLd school={school} />
+      <div className="mx-auto max-w-6xl px-4 py-8">
       <Link
         href="/schools"
         className="mb-6 inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-primary"
@@ -116,6 +132,7 @@ export default async function SchoolDetailPage({ params }: PageProps) {
       </div>
 
       <DataDisclaimer className="mt-8" />
-    </div>
+      </div>
+    </>
   );
 }

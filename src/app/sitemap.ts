@@ -1,9 +1,10 @@
 import type { MetadataRoute } from "next";
 import { getAllSchools } from "@/lib/schools";
 import { getAllPolicySlugs } from "@/lib/policies";
+import { SITE_URL } from "@/lib/site";
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const baseUrl = "https://beijing-zhongkao-guide.vercel.app";
+  const baseUrl = SITE_URL;
 
   const staticPages = [
     { url: baseUrl, lastModified: new Date(), changeFrequency: "weekly" as const, priority: 1 },

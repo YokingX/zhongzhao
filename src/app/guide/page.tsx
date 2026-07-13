@@ -6,6 +6,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { GuideScoreAdvisor } from "@/components/guide/GuideScoreAdvisor";
 
 const batches = [
   {
@@ -74,6 +75,8 @@ export default function GuidePage() {
           分批次了解北京中考志愿填报规则，完成资格自查，科学填报志愿。
         </p>
       </div>
+
+      <GuideScoreAdvisor />
 
       {/* Eligibility Check */}
       <Card className="mb-8">

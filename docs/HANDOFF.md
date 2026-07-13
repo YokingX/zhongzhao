@@ -117,8 +117,11 @@ wrangler.sync.jsonc        # Sync Worker（远程 D1）
   - ✅ `npm run audit:aliases` 审计脚本（全部通过，306 条 FETCH 别名）
   - ✅ 外围区：移除 `outer-districts-24-25-est` 预估源，改用 `outer-districts-2024-ranks`（区排名）+ 通州/大兴/经开 2024 汇总（共 22 抓取源）
   - ✅ 别名批量补全（audit 全部通过，306 条 FETCH 别名）
-- 阶段 3 🎯 产品增强（趋势图、攻略互动）
-- 阶段 4 🚀 运营（自定义域名、监控告警）
+- 阶段 3 ✅ 产品增强（趋势图、攻略互动、SEO）
+  - ✅ 学校详情趋势图：双 Y 轴（分数线 + 区排名）、2025 改革跨年说明
+  - ✅ 填报攻略「估分志愿助手」：批次资格 + 冲稳保兜区间 + 跳转分数线筛选
+  - ✅ SEO：`SITE_URL`、sitemap/robots 修正、学校页 JSON-LD 与 Open Graph
+- 阶段 4 🎯 运营（自定义域名、监控告警）
 
 ## 新会话启动提示词
 
