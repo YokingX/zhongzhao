@@ -268,6 +268,23 @@ export const getDistricts = cache(async (): Promise<string[]> => {
   return [...new Set(loadSchoolsFromJson().map((s) => s.district))].sort();
 });
 
+export const getDistrictSchoolCounts = cache(
+  async (): Promise<{ district: string; count: number }[]> => {
+    const d1 = await getD1();
+    if (d1) {
+      const { queryDistrictSchoolCountsD1 } = await import("@/db/d1-queries");
+      return queryDistrictSchoolCountsD1(d1);
+    }
+    const counts = new Map<string, number>();
+    for (const school of loadSchoolsFromJson()) {
+      counts.set(school.district, (counts.get(school.district) ?? 0) + 1);
+    }
+    return [...counts.entries()]
+      .map(([district, count]) => ({ district, count }))
+      .sort((a, b) => a.district.localeCompare(b.district, "zh"));
+  }
+);
+
 export const getSchoolsWithScores = cache(async (): Promise<number> => {
   const { withScores } = await getSchoolCounts();
   return withScores;

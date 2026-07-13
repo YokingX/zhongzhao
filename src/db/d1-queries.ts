@@ -111,6 +111,15 @@ export async function queryDistrictsD1(d1: D1Database): Promise<string[]> {
   return (results || []).map((r) => r.district);
 }
 
+export async function queryDistrictSchoolCountsD1(
+  d1: D1Database
+): Promise<{ district: string; count: number }[]> {
+  const { results } = await d1
+    .prepare(`SELECT district, COUNT(*) AS count FROM schools GROUP BY district ORDER BY district`)
+    .all<{ district: string; count: number }>();
+  return (results || []).map((r) => ({ district: r.district, count: r.count }));
+}
+
 export async function queryScoreYearsD1(d1: D1Database): Promise<number[]> {
   const { results } = await d1
     .prepare(`SELECT DISTINCT year FROM score_lines ORDER BY year DESC`)
