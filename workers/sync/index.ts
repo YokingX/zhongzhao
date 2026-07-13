@@ -2,6 +2,7 @@
  * Cloudflare Cron Worker：定时抓取分数线并写入 D1
  */
 import { runFetch, normalizeSchoolName } from "../../scripts/fetch-core.mjs";
+import { evaluateDataHealth } from "../../src/lib/health";
 
 const SCORE_SCALES: Record<number, number> = {
   2025: 510,
@@ -13,6 +14,7 @@ const SCORE_SCALES: Record<number, number> = {
 interface Env {
   DB: D1Database;
   CRON_SECRET?: string;
+  ALERT_WEBHOOK_URL?: string;
 }
 
 interface DbSchool {
@@ -80,6 +82,32 @@ async function applyFetchedScores(
   }
 
   return { updated, unmatched };
+}
+
+async function notifyAlert(env: Env, payload: Record<string, unknown>) {
+  if (!env.ALERT_WEBHOOK_URL) return;
+  try {
+    await fetch(env.ALERT_WEBHOOK_URL, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        service: "zhongzhao-sync",
+        timestamp: new Date().toISOString(),
+        ...payload,
+      }),
+    });
+  } catch {
+    // 告警失败不影响主流程
+  }
+}
+
+function resolveSyncStatus(
+  failedCount: number,
+  successCount: number
+): "success" | "partial" | "failed" {
+  if (failedCount === 0) return "success";
+  if (successCount === 0) return "failed";
+  return "partial";
 }
 
 async function getDataQuality(db: D1Database) {
@@ -226,35 +254,74 @@ export async function runCloudflareSync(env: Env) {
   ).first<{ schools_count: number; with_scores: number }>();
 
   const finishedAt = new Date().toISOString();
+  const syncStatus = resolveSyncStatus(payload.failed.length, payload.sources.length);
+  const errors = [
+    ...payload.failed,
+    ...(unmatched.length
+      ? [{ type: "unmatched_schools", count: unmatched.length, names: unmatched.slice(0, 50) }]
+      : []),
+  ];
+
   await logSync(env.DB, {
     startedAt,
     finishedAt,
-    status: "success",
+    status: syncStatus,
     schoolsCount: stats?.schools_count ?? 0,
     schoolsWithScores: stats?.with_scores ?? 0,
     fetchedCount: Object.keys(payload.schools).length,
     sources: payload.sources,
-    errors: [
-      ...payload.failed,
-      ...(unmatched.length
-        ? [{ type: "unmatched_schools", count: unmatched.length, names: unmatched.slice(0, 50) }]
-        : []),
-    ],
+    errors,
   });
 
+  if (syncStatus !== "success") {
+    await notifyAlert(env, {
+      type: "sync_degraded",
+      status: syncStatus,
+      failedSources: payload.failed.length,
+      failed: payload.failed,
+      unmatched: unmatched.length,
+    });
+  }
+
+  const quality = await getDataQuality(env.DB);
+  const health = evaluateDataHealth({
+    schools: quality.schools,
+    schoolsWithScores: quality.schoolsWithScores,
+    scoreLines: quality.scoreLines,
+    failedSources: quality.failedSources,
+    lastSyncFinishedAt: finishedAt,
+  });
+  if (!health.ok || health.status === "degraded") {
+    await notifyAlert(env, {
+      type: "data_quality",
+      status: health.status,
+      issues: health.issues,
+    });
+  }
+
   return {
-    ok: true,
+    ok: syncStatus !== "failed",
+    status: syncStatus,
     fetchedSchools: Object.keys(payload.schools).length,
     scoreUpdates,
     unmatched: unmatched.length,
     failed: payload.failed.length,
     finishedAt,
+    health,
   };
 }
 
 export default {
   async scheduled(_event: ScheduledEvent, env: Env, ctx: ExecutionContext) {
-    ctx.waitUntil(runCloudflareSync(env));
+    ctx.waitUntil(
+      runCloudflareSync(env).catch(async (error) => {
+        await notifyAlert(env, {
+          type: "sync_error",
+          error: error instanceof Error ? error.message : String(error),
+        });
+        throw error;
+      })
+    );
   },
 
   async fetch(request: Request, env: Env) {
@@ -265,8 +332,19 @@ export default {
       if (env.CRON_SECRET && auth !== `Bearer ${env.CRON_SECRET}`) {
         return Response.json({ error: "Unauthorized" }, { status: 401 });
       }
-      const result = await runCloudflareSync(env);
-      return Response.json(result);
+      try {
+        const result = await runCloudflareSync(env);
+        return Response.json(result, { status: result.ok ? 200 : 503 });
+      } catch (error) {
+        await notifyAlert(env, {
+          type: "sync_error",
+          error: error instanceof Error ? error.message : String(error),
+        });
+        return Response.json(
+          { ok: false, error: error instanceof Error ? error.message : String(error) },
+          { status: 500 }
+        );
+      }
     }
 
     if (url.pathname === "/health") {
@@ -285,17 +363,31 @@ export default {
         sources: string;
         errors: string;
       }>();
-      return Response.json({
-        ok: true,
-        ...quality,
-        lastSync: lastSync
-          ? {
-              ...lastSync,
-              sources: JSON.parse(lastSync.sources || "[]"),
-              errors: JSON.parse(lastSync.errors || "[]"),
-            }
-          : null,
+
+      const evaluation = evaluateDataHealth({
+        schools: quality.schools,
+        schoolsWithScores: quality.schoolsWithScores,
+        scoreLines: quality.scoreLines,
+        failedSources: quality.failedSources,
+        lastSyncFinishedAt: lastSync?.finished_at,
       });
+
+      return Response.json(
+        {
+          service: "zhongzhao-sync",
+          ...evaluation,
+          ...quality,
+          checkedAt: new Date().toISOString(),
+          lastSync: lastSync
+            ? {
+                ...lastSync,
+                sources: JSON.parse(lastSync.sources || "[]"),
+                errors: JSON.parse(lastSync.errors || "[]"),
+              }
+            : null,
+        },
+        { status: evaluation.ok ? 200 : 503 }
+      );
     }
 
     if (url.pathname === "/logs") {

@@ -1,0 +1,23 @@
+name: Health Check
+
+on:
+  schedule:
+    # 每天北京时间 09:00（UTC 01:00）
+    - cron: "0 1 * * *"
+  workflow_dispatch:
+
+jobs:
+  health:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+      - run: npm ci
+      - name: Check production health
+        run: npm run health:check
+        env:
+          SITE_URL: https://zhongzhao-web.zhaixiuchen.workers.dev
+          SYNC_URL: https://zhongzhao-sync.zhaixiuchen.workers.dev

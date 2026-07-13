@@ -22,6 +22,11 @@ function to2025Scale(score: number, scaleYear: ScaleYear): number {
   return Math.round((score / max2024) * max2025);
 }
 
+function from2025Scale(score2025: number, scaleYear: ScaleYear): number {
+  if (scaleYear === 2025) return score2025;
+  return Math.round((score2025 / SCORE_SCALES[2025]) * SCORE_SCALES[2024]);
+}
+
 function volunteerBands(score2025: number) {
   return [
     { label: "冲刺", range: [score2025 + 10, score2025 + 25], tip: "前 3 个志愿，略高于估分" },
@@ -29,6 +34,18 @@ function volunteerBands(score2025: number) {
     { label: "保底", range: [score2025 - 20, score2025 - 5], tip: "后 3 个志愿，低于估分 5–20 分" },
     { label: "兜底", range: [score2025 - 35, score2025 - 20], tip: "最后 2 个志愿，确保有学上" },
   ] as const;
+}
+
+function volunteerBandsForScale(score: number, scaleYear: ScaleYear) {
+  const base = volunteerBands(to2025Scale(score, scaleYear));
+  const max = SCORE_SCALES[scaleYear];
+  return base.map((band) => ({
+    ...band,
+    range: [
+      Math.max(1, from2025Scale(band.range[0], scaleYear)),
+      Math.min(max, from2025Scale(band.range[1], scaleYear)),
+    ] as [number, number],
+  }));
 }
 
 export function GuideScoreAdvisor() {
@@ -50,8 +67,9 @@ export function GuideScoreAdvisor() {
     };
   }, [score2025]);
 
-  const bands = score2025 != null ? volunteerBands(score2025) : [];
+  const bands = valid && displayScore != null ? volunteerBandsForScale(displayScore, scaleYear) : [];
   const queryYear = scaleYear;
+  const scoreMax = SCORE_SCALES[scaleYear];
 
   return (
     <Card className="mb-8">
@@ -130,9 +148,7 @@ export function GuideScoreAdvisor() {
               <h3 className="mb-3 text-sm font-semibold">统一招生 12 志愿区间建议</h3>
               <div className="grid gap-3 sm:grid-cols-2">
                 {bands.map((band) => {
-                  const [min, max] = band.range;
-                  const clampedMin = Math.max(1, min);
-                  const clampedMax = Math.min(SCORE_SCALES[2025], max);
+                  const [clampedMin, clampedMax] = band.range;
                   const href = `/scores?year=${queryYear}&batch=统一招生&minScore=${clampedMin}&maxScore=${clampedMax}`;
                   return (
                     <div
@@ -158,7 +174,7 @@ export function GuideScoreAdvisor() {
             <div className="flex flex-wrap gap-3">
               <Button asChild size="sm">
                 <Link
-                  href={`/scores?year=${queryYear}&batch=统一招生&minScore=${Math.max(1, score2025 - 15)}&maxScore=${Math.min(SCORE_SCALES[scaleYear], score2025 + 15)}`}
+                  href={`/scores?year=${queryYear}&batch=统一招生&minScore=${Math.max(1, displayScore - 15)}&maxScore=${Math.min(scoreMax, displayScore + 15)}`}
                 >
                   查看估分 ±15 分学校
                 </Link>

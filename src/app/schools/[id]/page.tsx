@@ -29,9 +29,13 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   const scoreHint = latest
     ? `${latest.year}年统招线 ${formatScore(latest.minScore, latest.year)}`
     : "历年分数线";
+  const descSnippet =
+    school.description.length > 80
+      ? `${school.description.slice(0, 80)}…`
+      : school.description;
   return {
     title: `${school.name} - ${school.district}${school.type}`,
-    description: `${school.name}（${school.district}·${school.type}）：${school.description.slice(0, 80)}… ${scoreHint}。`,
+    description: `${school.name}（${school.district}·${school.type}）：${descSnippet} ${scoreHint}。`,
     keywords: [school.name, school.shortName, school.district, "北京中考", "录取分数线"],
     openGraph: {
       title: school.name,

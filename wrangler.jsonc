@@ -15,5 +15,8 @@
       "database_id": "e33030b9-7326-43ae-bcd7-5b0a54d2b1be",
       "migrations_dir": "migrations"
     }
-  ]
+  ],
+  "vars": {
+    "NEXT_PUBLIC_SITE_URL": "https://zhongzhao-web.zhaixiuchen.workers.dev"
+  }
 }

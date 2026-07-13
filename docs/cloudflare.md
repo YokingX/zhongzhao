@@ -66,6 +66,19 @@ npm run d1:stats:remote
 | 服务 | URL |
 |------|-----|
 | 网站 | https://zhongzhao-web.zhaixiuchen.workers.dev |
+| 网站健康检查 | https://zhongzhao-web.zhaixiuchen.workers.dev/api/health |
 | Sync Worker | https://zhongzhao-sync.zhaixiuchen.workers.dev |
 | 健康检查 | https://zhongzhao-sync.zhaixiuchen.workers.dev/health |
 | 同步日志 | https://zhongzhao-sync.zhaixiuchen.workers.dev/logs |
+
+## 监控与告警
+
+```bash
+# 本地巡检
+npm run health:check
+
+# 可选：同步失败 / 数据降级时 Webhook 告警
+npx wrangler secret put ALERT_WEBHOOK_URL -c wrangler.sync.jsonc
+```
+
+自定义域名见 [custom-domain.md](./custom-domain.md)。
