@@ -105,7 +105,8 @@ wrangler.sync.jsonc        # Sync Worker（远程 D1）
   - ✅ `/health` 数据质量指标（校数、分数线、失败源、各源状态）
   - ✅ 别名合并至 `score-aliases.mjs`（`FETCH_NAME_ALIASES`）
   - ✅ `npm run audit:aliases` 审计脚本（当前约 119 校待补别名）
-  - ⏳ 外围区 24-25 正式对比页（替换预估源）
+  - ✅ 外围区：移除 `outer-districts-24-25-est` 预估源，改用 `outer-districts-2024-ranks`（区排名）+ 通州/大兴/经开 2024 汇总（共 22 抓取源）
+  - ✅ 别名批量补全（audit 全部通过，306 条 FETCH 别名）
 - 阶段 3 🎯 产品增强（趋势图、攻略互动）
 - 阶段 4 🚀 运营（自定义域名、监控告警）
 

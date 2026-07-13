@@ -1,7 +1,7 @@
 {
-  "lastUpdated": "2026-07-12T15:24:22.367Z",
-  "lastSync": "2026-07-12T15:24:22.367Z",
-  "schoolCount": 290,
+  "lastUpdated": "2026-07-13T06:28:02.405Z",
+  "lastSync": "2026-07-13T06:28:02.405Z",
+  "schoolCount": 341,
   "fetchSources": [
     "haidian-24-25",
     "xicheng-24-25",
@@ -9,7 +9,10 @@
     "dongcheng-24-25",
     "dongcheng-2024",
     "fengtai-2025",
-    "outer-districts-24-25-est",
+    "outer-districts-2024-ranks",
+    "tongzhou-2024-bj",
+    "daxing-2024-bj",
+    "jingkai-2024-bj",
     "xicheng-2024",
     "haidian-2024",
     "fengtai-2024",

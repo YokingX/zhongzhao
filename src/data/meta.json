@@ -1,8 +1,8 @@
 {
   "version": "2025-07",
   "officialListYear": 2024,
-  "totalSchools": 329,
-  "schoolsWithScores": 276,
+  "totalSchools": 335,
+  "schoolsWithScores": 282,
   "scoreScales": {
     "2022": 660,
     "2023": 660,
@@ -13,7 +13,7 @@
   "officialSource": "https://www.bjeea.cn/",
   "schoolListSource": "北京市教委2024年具有招生资格的普通高中学校名单",
   "disclaimer": "各校分数线为统招普通班网传数据，仅供参考，以北京教育考试院官方发布为准。2025年中考改革后满分为510分，与2024年（670分）不可直接比较绝对分值，建议参考区排名。",
-  "lastUpdated": "2026-07-12T15:24:22.367Z",
+  "lastUpdated": "2026-07-13T06:28:02.405Z",
   "autoSync": true,
   "database": "d1"
 }

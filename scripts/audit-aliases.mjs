@@ -19,7 +19,8 @@ function loadOfficialNames() {
   }
   try {
     const data = JSON.parse(fs.readFileSync(SCHOOLS_JSON, "utf-8"));
-    for (const school of data.schools || []) {
+    const list = Array.isArray(data) ? data : data.schools || [];
+    for (const school of list) {
       if (school.name) names.add(school.name);
     }
   } catch {

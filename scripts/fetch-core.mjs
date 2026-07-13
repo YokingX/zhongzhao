@@ -41,10 +41,28 @@ const SOURCES = [
     parser: "singleDistrict2025",
   },
   {
-    id: "outer-districts-24-25-est",
-    url: "https://www.zhongkaobj.cn/lqfsx/qitaqu/202412025506.html",
+    id: "outer-districts-2024-ranks",
+    url: "https://www.zhongkaobj.cn/lqfsx/qitaqu/202409251260.html",
     district: "外围",
-    parser: "districtYearCompare",
+    parser: "outerThreeYear2024",
+  },
+  {
+    id: "tongzhou-2024-bj",
+    url: "https://www.zhongkaobj.cn/lqfsx/qitaqu/202410222442.html",
+    district: "通州",
+    parser: "numberedDistrict2024",
+  },
+  {
+    id: "daxing-2024-bj",
+    url: "https://www.zhongkaobj.cn/lqfsx/qitaqu/202410222463.html",
+    district: "大兴",
+    parser: "districtTable",
+  },
+  {
+    id: "jingkai-2024-bj",
+    url: "https://www.zhongkaobj.cn/lqfsx/qitaqu/202410222476.html",
+    district: "经开",
+    parser: "districtTable",
   },
   {
     id: "xicheng-2024",
@@ -120,15 +138,42 @@ const SOURCES = [
   },
 ];
 
+function isValidSchoolLabel(label) {
+  if (!label || isHeaderCell(label)) return false;
+  if (/^\d{2,3}$/.test(label)) return false;
+  if (/实验班$|^创新班|^科学班|^人文班|^砺学班/.test(label)) return false;
+  if (/^莲葩园\d*$/.test(label)) return false;
+  if (label.includes("职业学校")) return false;
+  if (label.includes("对海淀招生") || label.includes("&mdash;")) return false;
+  return true;
+}
+
 function normalizeSchoolName(raw) {
   const name = raw
+    .replace(/&mdash;|&nbsp;/gi, "")
     .replace(/\s+/g, "")
     .replace(/（.*?）|\(.*?\)/g, "")
     .trim();
-  if (!name) return null;
+  if (!name || !isValidSchoolLabel(name)) return null;
   if (FETCH_NAME_ALIASES[name]) return FETCH_NAME_ALIASES[name];
-  if (name.startsWith("北京市") || name.startsWith("北京")) return name;
-  if (name.includes("中学") || name.includes("学校")) return `北京市${name.replace(/^北京/, "")}`;
+
+  const numbered = name.match(/^北京(?!市)(第)?([一二三四五六七八九十百零〇两\d]+)(中学|中)$/);
+  if (numbered) return `北京市第${numbered[2]}中学`;
+
+  if (name.startsWith("北京市")) return name;
+
+  if (name.startsWith("北京")) {
+    const rest = name.slice(2);
+    const universityLike = /大学|师范|传媒|地质|农业|外国语|实验|教科|民族|科学|航空航天|交通|理工|工业|化工|财经|经贸|中医|电影|舞蹈|体育|政法|语言|第二外国语|金融街|景山|汇文|陈经纶|钱学森|赵登禹|牛栏山|潞河|运河|永乐店|张家湾|良乡|牛栏山|育新|翠微|志清|建华|八一|育英|中关村|人朝|十一学校|一零一|一〇一|零一|101/.test(
+      rest
+    );
+    if (!universityLike && (rest.includes("中学") || rest.includes("学校"))) {
+      return `北京市${rest}`;
+    }
+    return name;
+  }
+
+  if (name.includes("中学") || name.includes("学校")) return `北京市${name}`;
   return name;
 }
 
@@ -173,6 +218,7 @@ function parseHaidianCompare(html) {
     const cells = row.split("|").map((c) => c.trim()).filter(Boolean);
     if (cells.length < 5) continue;
     if (isHeaderCell(cells[0])) continue;
+    if (!isValidSchoolLabel(cells[0])) continue;
     const official = normalizeSchoolName(cells[0]);
     if (!official) continue;
     const y2025 = Number(cells[1]);
@@ -374,11 +420,6 @@ function parseSingleDistrict2025(html) {
   return schools;
 }
 
-function parseScoreOnly(text) {
-  const m = String(text).replace(/\s+/g, "").match(/(\d{3})/);
-  return m ? Number(m[1]) : NaN;
-}
-
 function parseDistrictYearCompare(html) {
   const schools = {};
   for (const row of parseHtmlTableRows(html)) {
@@ -416,6 +457,91 @@ function parseDistrictYearCompare(html) {
   return schools;
 }
 
+function parseScoreOnly(text) {
+  const m = String(text).replace(/\s+/g, "").match(/(\d{3})/);
+  return m ? Number(m[1]) : NaN;
+}
+
+const OUTER_DISTRICT_MARKERS = [
+  "区",
+  "石景山",
+  "顺义",
+  "房山",
+  "门头沟",
+  "怀柔",
+  "经开",
+];
+
+function parseOuterThreeYear2024(html) {
+  const schools = {};
+  for (const row of parseHtmlTableRows(html)) {
+    const cells = row.split("|").map((c) => c.trim()).filter(Boolean);
+    if (cells.length < 3) continue;
+    if (
+      cells.some(
+        (c) =>
+          c.includes("近三年") ||
+          c.includes("所在区") ||
+          (c.includes("录取") && c.includes("排名") && c.length < 12)
+      )
+    ) {
+      continue;
+    }
+
+    const isDistrictRow = OUTER_DISTRICT_MARKERS.some(
+      (m) => cells[0] === m || cells[0].includes(m)
+    );
+
+    let label;
+    let scoreRaw;
+    let rankRaw;
+
+    if (isDistrictRow && cells.length >= 5) {
+      label = cells[1];
+      scoreRaw = cells[2];
+      rankRaw = cells[4];
+    } else if (!/^\d+$/.test(cells[0]) && cells.length >= 4) {
+      label = cells[0];
+      scoreRaw = cells[1];
+      rankRaw = cells[3];
+    } else {
+      continue;
+    }
+
+    if (isHeaderCell(label)) continue;
+    const score = parseScoreOnly(scoreRaw);
+    const rankMatch = String(rankRaw || "").match(/(\d+)/);
+    const rank = rankMatch ? Number(rankMatch[1]) : null;
+    if (!score) continue;
+
+    const official = normalizeSchoolName(label);
+    if (!official) continue;
+    schools[official] = schools[official] || {};
+    schools[official][2024] = [score, rank];
+  }
+  return schools;
+}
+
+function parseNumberedDistrict2024(html) {
+  const schools = {};
+  for (const row of parseHtmlTableRows(html)) {
+    const cells = row.split("|").map((c) => c.trim()).filter(Boolean);
+    if (cells.length < 4) continue;
+    if (!/^\d+$/.test(cells[0])) continue;
+
+    const label = cells[1];
+    const score = parseScoreOnly(cells[2]);
+    const rank = Number(String(cells[3]).match(/(\d+)/)?.[1]);
+    if (isHeaderCell(label) || !score) continue;
+
+    const official = normalizeSchoolName(label);
+    if (!official) continue;
+    schools[official] = schools[official] || {};
+    schools[official][2024] = [score, Number.isNaN(rank) ? null : rank];
+  }
+  return schools;
+}
+
 async function fetchSource(source) {
   const res = await fetch(source.url, {
     headers: { "User-Agent": "BeijingZhongkaoGuide/1.0 (data-sync)" },
@@ -431,6 +557,8 @@ async function fetchSource(source) {
   if (source.parser === "district2025") return parseDistrict2025(html);
   if (source.parser === "singleDistrict2025") return parseSingleDistrict2025(html);
   if (source.parser === "districtYearCompare") return parseDistrictYearCompare(html);
+  if (source.parser === "outerThreeYear2024") return parseOuterThreeYear2024(html);
+  if (source.parser === "numberedDistrict2024") return parseNumberedDistrict2024(html);
   return {};
 }
 
