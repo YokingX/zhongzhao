@@ -1,6 +1,6 @@
 # 开发交接文档
 
-> 最后更新：2026-07-12  
+> 最后更新：2026-07-13  
 > 用途：新开会话时粘贴或引用本文，快速恢复上下文。
 
 ## 项目概述
@@ -61,6 +61,7 @@
 # 本地开发（读本地 D1）
 npm run d1:migrate          # 首次：初始化本地 D1 表结构
 npm run sync:data           # 抓取 → JSON → 本地 D1
+npm run audit:aliases       # 审计抓取校名与官方库映射缺口
 npm run dev                 # OpenNext preview + 本地 D1
 npm run dev:build           # 强制重建后启动 dev
 npm run d1:stats            # 查看本地 D1 统计
@@ -83,7 +84,9 @@ npm run dev:next
 ```
 migrations/0001_init.sql   # D1 表结构
 workers/sync/index.ts      # Cron → 远程 D1
-scripts/fetch-core.mjs     # 抓取核心
+scripts/fetch-core.mjs     # 抓取核心（别名见 score-aliases.mjs）
+scripts/score-aliases.mjs  # SCORE_ALIASES + FETCH_NAME_ALIASES 统一别名表
+scripts/audit-aliases.mjs    # 别名映射缺口审计
 scripts/d1-seed.mjs        # schools.json → D1（local / remote）
 scripts/dev.mjs            # 本地 preview + 本地 D1
 src/db/d1-queries.ts       # D1 查询
@@ -95,7 +98,11 @@ wrangler.sync.jsonc        # Sync Worker（远程 D1）
 ## 路线图
 
 - 阶段 0–1 ✅ MVP + Cloudflare 生产化
-- 阶段 2 📊 数据质量（外围区对比页、别名治理）
+- 阶段 2 🔄 数据质量（进行中）
+  - ✅ `/health` 数据质量指标（校数、分数线、失败源、各源状态）
+  - ✅ 别名合并至 `score-aliases.mjs`（`FETCH_NAME_ALIASES`）
+  - ✅ `npm run audit:aliases` 审计脚本（当前约 119 校待补别名）
+  - ⏳ 外围区 24-25 正式对比页（替换预估源）
 - 阶段 3 🎯 产品增强（趋势图、攻略互动）
 - 阶段 4 🚀 运营（自定义域名、监控告警）
 

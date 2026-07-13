@@ -44,10 +44,14 @@ async function applyFetchedScores(
   const index = buildSchoolIndex(results || []);
   const now = new Date().toISOString();
   let updated = 0;
+  const unmatched: string[] = [];
 
   for (const [name, years] of Object.entries(fetched)) {
     const schoolId = resolveSchoolId(name, index);
-    if (!schoolId) continue;
+    if (!schoolId) {
+      unmatched.push(name);
+      continue;
+    }
 
     for (const [yearStr, [minScore, districtRank]] of Object.entries(years)) {
       const year = Number(yearStr);
@@ -75,7 +79,58 @@ async function applyFetchedScores(
       .run();
   }
 
-  return updated;
+  return { updated, unmatched };
+}
+
+async function getDataQuality(db: D1Database) {
+  const stats = await db
+    .prepare(
+      `SELECT
+        (SELECT COUNT(*) FROM schools) AS schools_count,
+        (SELECT COUNT(DISTINCT school_id) FROM score_lines) AS schools_with_scores,
+        (SELECT COUNT(*) FROM score_lines) AS score_lines_count,
+        (SELECT COUNT(*) FROM fetch_sources WHERE last_error IS NOT NULL) AS failed_sources`
+    )
+    .first<{
+      schools_count: number;
+      schools_with_scores: number;
+      score_lines_count: number;
+      failed_sources: number;
+    }>();
+
+  const { results: failedSourceRows } = await db
+    .prepare(
+      `SELECT id, district, last_error, last_success_at
+       FROM fetch_sources WHERE last_error IS NOT NULL ORDER BY id`
+    )
+    .all<{
+      id: string;
+      district: string | null;
+      last_error: string;
+      last_success_at: string | null;
+    }>();
+
+  const { results: sourceRows } = await db
+    .prepare(
+      `SELECT id, district, last_success_at, last_count, last_error
+       FROM fetch_sources ORDER BY id`
+    )
+    .all<{
+      id: string;
+      district: string | null;
+      last_success_at: string | null;
+      last_count: number | null;
+      last_error: string | null;
+    }>();
+
+  return {
+    schools: stats?.schools_count ?? 0,
+    schoolsWithScores: stats?.schools_with_scores ?? 0,
+    scoreLines: stats?.score_lines_count ?? 0,
+    failedSources: stats?.failed_sources ?? 0,
+    failedSourceDetails: failedSourceRows || [],
+    sources: sourceRows || [],
+  };
 }
 
 async function logSync(
@@ -158,7 +213,10 @@ export async function runCloudflareSync(env: Env) {
   }
 
   const payload = await runFetch({ existingSchools });
-  const scoreUpdates = await applyFetchedScores(env.DB, payload.schools);
+  const { updated: scoreUpdates, unmatched } = await applyFetchedScores(
+    env.DB,
+    payload.schools
+  );
   await updateFetchSources(env.DB, payload.sources, payload.failed);
 
   const stats = await env.DB.prepare(
@@ -176,13 +234,19 @@ export async function runCloudflareSync(env: Env) {
     schoolsWithScores: stats?.with_scores ?? 0,
     fetchedCount: Object.keys(payload.schools).length,
     sources: payload.sources,
-    errors: payload.failed,
+    errors: [
+      ...payload.failed,
+      ...(unmatched.length
+        ? [{ type: "unmatched_schools", count: unmatched.length, names: unmatched.slice(0, 50) }]
+        : []),
+    ],
   });
 
   return {
     ok: true,
     fetchedSchools: Object.keys(payload.schools).length,
     scoreUpdates,
+    unmatched: unmatched.length,
     failed: payload.failed.length,
     finishedAt,
   };
@@ -206,9 +270,7 @@ export default {
     }
 
     if (url.pathname === "/health") {
-      const stats = await env.DB.prepare(
-        "SELECT COUNT(*) AS c FROM schools"
-      ).first<{ c: number }>();
+      const quality = await getDataQuality(env.DB);
       const lastSync = await env.DB.prepare(
         `SELECT started_at, finished_at, status, schools_count, schools_with_scores,
                 fetched_count, sources, errors
@@ -225,7 +287,7 @@ export default {
       }>();
       return Response.json({
         ok: true,
-        schools: stats?.c ?? 0,
+        ...quality,
         lastSync: lastSync
           ? {
               ...lastSync,

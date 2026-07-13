@@ -13,6 +13,7 @@
     "generate:schools": "node scripts/generate-schools.mjs",
     "fetch:scores": "node scripts/fetch-scores.mjs",
     "sync:data": "node scripts/sync-data.mjs",
+    "audit:aliases": "node scripts/audit-aliases.mjs",
     "watch:data": "node scripts/watch-data.mjs",
     "d1:migrate": "wrangler d1 migrations apply zhongzhao-db --local -c wrangler.sync.jsonc",
     "d1:migrate:remote": "wrangler d1 migrations apply zhongzhao-db --remote -c wrangler.sync.jsonc",
