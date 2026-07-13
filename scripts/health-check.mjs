@@ -31,11 +31,24 @@ async function checkEndpoint(name, url) {
   return pass;
 }
 
+async function checkPage(name, url) {
+  const res = await fetch(url, { signal: AbortSignal.timeout(20000) });
+  const pass = res.ok;
+  console.log(`${pass ? "✓" : "✗"} ${name}: HTTP ${res.status}`);
+  if (!pass) {
+    const text = await res.text().catch(() => "");
+    console.log(`    ${text.slice(0, 200)}`);
+  }
+  return pass;
+}
+
 async function main() {
   console.log("健康检查…");
   const results = await Promise.all([
     checkEndpoint("网站 /api/health", `${SITE_URL}/api/health`),
     checkEndpoint("Sync /health", `${SYNC_URL}/health`),
+    checkPage("分数线 /scores", `${SITE_URL}/scores`),
+    checkPage("分数线分页", `${SITE_URL}/scores?year=2025&batch=${encodeURIComponent("统一招生")}&page=1`),
   ]);
 
   if (results.every(Boolean)) {

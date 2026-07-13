@@ -9,8 +9,10 @@ import { School, AdmissionBatch } from "@/types/school";
 import schoolsData from "@/data/schools.json";
 import { formatScore, getLatestScore } from "@/lib/school-utils";
 import { matchesSchoolQuery } from "@/lib/pinyin";
+import { SCORES_PAGE_SIZE, SCHOOLS_PAGE_SIZE } from "@/lib/d1-limits";
 
 export { formatScore, getLatestScore };
+export { SCORES_PAGE_SIZE, SCHOOLS_PAGE_SIZE };
 
 let schoolsCache: School[] | null = null;
 let jsonFallbackWarned = false;
@@ -39,13 +41,23 @@ function loadSchoolsFromJson(): School[] {
 }
 
 async function resolveSchoolIdsByQuery(query: string): Promise<string[] | undefined> {
+  const q = query.trim();
+  if (!q) return undefined;
+
   const d1 = await getD1();
   if (d1) {
-    const { querySchoolSearchIndexD1 } = await import("@/db/d1-queries");
+    const { querySchoolIdsByTextD1, querySchoolSearchIndexD1 } = await import("@/db/d1-queries");
+    const ids = new Set<string>();
+
+    if (/[\u4e00-\u9fff]/.test(q)) {
+      for (const id of await querySchoolIdsByTextD1(d1, q)) ids.add(id);
+      return [...ids];
+    }
+
     const index = await querySchoolSearchIndexD1(d1);
     return index
       .filter((s) =>
-        matchesSchoolQuery(query, {
+        matchesSchoolQuery(q, {
           name: s.name,
           shortName: s.shortName,
           district: s.district,
@@ -53,9 +65,10 @@ async function resolveSchoolIdsByQuery(query: string): Promise<string[] | undefi
       )
       .map((s) => s.id);
   }
+
   return loadSchoolsFromJson()
     .filter((s) =>
-      matchesSchoolQuery(query, {
+      matchesSchoolQuery(q, {
         name: s.name,
         shortName: s.shortName,
         district: s.district,
@@ -97,8 +110,6 @@ export const getSchoolById = cache(async (id: string): Promise<School | undefine
   }
   return loadSchoolsFromJson().find((s) => s.id === id);
 });
-
-export const SCHOOLS_PAGE_SIZE = 24;
 
 export const filterSchools = cache(
   async (options: {
@@ -175,28 +186,47 @@ export const filterScoreRecords = cache(
     minScore?: number;
     maxScore?: number;
     query?: string;
-  }): Promise<ScoreRecord[]> => {
+    page?: number;
+    pageSize?: number;
+  }): Promise<{
+    records: ScoreRecord[];
+    total: number;
+    page: number;
+    pageSize: number;
+  }> => {
+    const pageSize = options.pageSize ?? SCORES_PAGE_SIZE;
+    const page = Math.max(1, options.page ?? 1);
+    const offset = (page - 1) * pageSize;
+
     const schoolIds = options.query ? await resolveSchoolIdsByQuery(options.query) : undefined;
-    if (options.query && schoolIds?.length === 0) return [];
+    if (options.query && schoolIds?.length === 0) {
+      return { records: [], total: 0, page, pageSize };
+    }
+
+    const filter = {
+      district: options.district,
+      batch: options.batch,
+      year: options.year,
+      minScore: options.minScore,
+      maxScore: options.maxScore,
+      schoolIds,
+    };
 
     const d1 = await getD1();
     if (d1) {
-      const { queryScoreRecordsD1 } = await import("@/db/d1-queries");
-      return queryScoreRecordsD1(d1, {
-        district: options.district,
-        batch: options.batch,
-        year: options.year,
-        minScore: options.minScore,
-        maxScore: options.maxScore,
-        schoolIds,
-      });
+      const { queryScoreRecordsD1, countScoreRecordsD1 } = await import("@/db/d1-queries");
+      const [records, total] = await Promise.all([
+        queryScoreRecordsD1(d1, { ...filter, limit: pageSize, offset }),
+        countScoreRecordsD1(d1, filter),
+      ]);
+      return { records, total, page, pageSize };
     }
 
-    const records: ScoreRecord[] = [];
+    const allRecords: ScoreRecord[] = [];
     for (const school of loadSchoolsFromJson()) {
       if (schoolIds && !schoolIds.includes(school.id)) continue;
       for (const line of school.scoreLines) {
-        records.push({
+        allRecords.push({
           schoolId: school.id,
           schoolName: school.name,
           shortName: school.shortName,
@@ -211,17 +241,21 @@ export const filterScoreRecords = cache(
         });
       }
     }
-    return records
+    const filtered = allRecords
       .filter((record) => {
         if (options.district && options.district !== "全部" && record.district !== options.district)
           return false;
         if (options.batch && options.batch !== "全部" && record.batch !== options.batch) return false;
-        if (options.year && record.year !== options.year) return false;
-        if (options.minScore && record.minScore < options.minScore) return false;
-        if (options.maxScore && record.minScore > options.maxScore) return false;
+        if (options.year != null && record.year !== options.year) return false;
+        if (options.minScore != null && record.minScore < options.minScore) return false;
+        if (options.maxScore != null && record.minScore > options.maxScore) return false;
         return true;
       })
       .sort((a, b) => b.year - a.year || b.minScore - a.minScore);
+
+    const total = filtered.length;
+    const records = filtered.slice(offset, offset + pageSize);
+    return { records, total, page, pageSize };
   }
 );
 

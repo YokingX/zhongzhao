@@ -6,7 +6,7 @@ import { getAllSchools, getSchoolById } from "@/lib/schools";
 import { formatScore } from "@/lib/school-utils";
 import { SchoolDetailInfo } from "@/components/schools/SchoolCard";
 import { SchoolJsonLd } from "@/components/schools/SchoolJsonLd";
-import { ScoreChart } from "@/components/scores/ScoreTable";
+import { ScoreChart } from "@/components/scores/ScoreChart";
 import { SITE_URL } from "@/lib/site";
 import { getLatestScore } from "@/lib/school-utils";
 import { DataDisclaimer } from "@/components/layout/DataDisclaimer";

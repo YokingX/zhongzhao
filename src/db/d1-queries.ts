@@ -1,5 +1,6 @@
 import { drizzle } from "drizzle-orm/d1";
 import type { School, ScoreLine, AdmissionBatch, SchoolType } from "@/types/school";
+import { D1_MAX_BINDS, SCORES_QUERY_MAX_ROWS } from "@/lib/d1-limits";
 import * as schema from "./schema";
 
 function parseJsonArray<T>(value: string | null | undefined, fallback: T[] = []): T[] {
@@ -147,7 +148,7 @@ export interface SchoolListFilter {
   offset?: number;
 }
 
-const D1_MAX_BINDS = 99;
+const D1_MAX_BINDS_LOCAL = D1_MAX_BINDS;
 
 function chunk<T>(items: T[], size: number): T[][] {
   const chunks: T[][] = [];
@@ -215,7 +216,7 @@ async function querySchoolRowsD1(
   let rows: Record<string, unknown>[] = [];
 
   if (options.schoolIds?.length) {
-    for (const ids of chunk(options.schoolIds, D1_MAX_BINDS)) {
+    for (const ids of chunk(options.schoolIds, D1_MAX_BINDS_LOCAL)) {
       const { sql, binds } = buildSchoolListSql(base, ids);
       const { results } = await d1
         .prepare(`${sql} ORDER BY district, short_name`)
@@ -300,6 +301,7 @@ export interface ScoreRecordFilter {
   maxScore?: number;
   schoolIds?: string[];
   limit?: number;
+  offset?: number;
 }
 
 export interface D1ScoreRecord {
@@ -316,26 +318,8 @@ export interface D1ScoreRecord {
   note?: string;
 }
 
-export async function queryScoreRecordsD1(
-  d1: D1Database,
-  options: ScoreRecordFilter = {}
-): Promise<D1ScoreRecord[]> {
-  if (options.schoolIds && options.schoolIds.length === 0) return [];
-
-  if (options.schoolIds && options.schoolIds.length > D1_MAX_BINDS) {
-    const allRecords: D1ScoreRecord[] = [];
-    for (const ids of chunk(options.schoolIds, D1_MAX_BINDS)) {
-      const batch = await queryScoreRecordsD1(d1, { ...options, schoolIds: ids, limit: undefined });
-      allRecords.push(...batch);
-    }
-    return allRecords
-      .sort((a, b) => b.year - a.year || b.minScore - a.minScore)
-      .slice(0, options.limit ?? 1000);
-  }
-
+function buildScoreRecordsWhere(options: ScoreRecordFilter) {
   let sql = `
-    SELECT s.id AS school_id, s.name AS school_name, s.short_name, s.district, s.type,
-           sl.year, sl.batch, sl.min_score, sl.max_score, sl.district_rank, sl.note
     FROM score_lines sl
     JOIN schools s ON s.id = sl.school_id
     WHERE 1=1`;
@@ -349,15 +333,15 @@ export async function queryScoreRecordsD1(
     sql += ` AND sl.batch = ?`;
     binds.push(options.batch);
   }
-  if (options.year) {
+  if (options.year != null) {
     sql += ` AND sl.year = ?`;
     binds.push(options.year);
   }
-  if (options.minScore) {
+  if (options.minScore != null) {
     sql += ` AND sl.min_score >= ?`;
     binds.push(options.minScore);
   }
-  if (options.maxScore) {
+  if (options.maxScore != null) {
     sql += ` AND sl.min_score <= ?`;
     binds.push(options.maxScore);
   }
@@ -366,10 +350,98 @@ export async function queryScoreRecordsD1(
     binds.push(...options.schoolIds);
   }
 
-  sql += ` ORDER BY sl.year DESC, sl.min_score DESC LIMIT ?`;
-  binds.push(options.limit ?? 1000);
+  return { sql, binds };
+}
 
-  const { results } = await d1.prepare(sql).bind(...binds).all<{
+function mapScoreRecordRow(row: {
+  school_id: string;
+  school_name: string;
+  short_name: string;
+  district: string;
+  type: string;
+  year: number;
+  batch: string;
+  min_score: number;
+  max_score: number | null;
+  district_rank: number | null;
+  note: string | null;
+}): D1ScoreRecord {
+  return {
+    schoolId: row.school_id,
+    schoolName: row.school_name,
+    shortName: row.short_name,
+    district: row.district,
+    type: row.type,
+    year: row.year,
+    batch: row.batch as AdmissionBatch,
+    minScore: row.min_score,
+    maxScore: row.max_score ?? undefined,
+    districtRank: row.district_rank ?? undefined,
+    note: row.note ?? undefined,
+  };
+}
+
+export async function countScoreRecordsD1(
+  d1: D1Database,
+  options: ScoreRecordFilter = {}
+): Promise<number> {
+  if (options.schoolIds && options.schoolIds.length === 0) return 0;
+
+  if (options.schoolIds && options.schoolIds.length > D1_MAX_BINDS_LOCAL) {
+    let total = 0;
+    for (const ids of chunk(options.schoolIds, D1_MAX_BINDS_LOCAL)) {
+      total += await countScoreRecordsD1(d1, { ...options, schoolIds: ids });
+    }
+    return total;
+  }
+
+  const { sql, binds } = buildScoreRecordsWhere(options);
+  const row = await d1
+    .prepare(`SELECT COUNT(*) AS count ${sql}`)
+    .bind(...binds)
+    .first<{ count: number }>();
+  return row?.count ?? 0;
+}
+
+export async function queryScoreRecordsD1(
+  d1: D1Database,
+  options: ScoreRecordFilter = {}
+): Promise<D1ScoreRecord[]> {
+  if (options.schoolIds && options.schoolIds.length === 0) return [];
+
+  const pageLimit = Math.min(options.limit ?? SCORES_QUERY_MAX_ROWS, SCORES_QUERY_MAX_ROWS);
+
+  if (options.schoolIds && options.schoolIds.length > D1_MAX_BINDS_LOCAL) {
+    const allRecords: D1ScoreRecord[] = [];
+    for (const ids of chunk(options.schoolIds, D1_MAX_BINDS_LOCAL)) {
+      const batch = await queryScoreRecordsD1(d1, {
+        ...options,
+        schoolIds: ids,
+        limit: undefined,
+        offset: undefined,
+      });
+      allRecords.push(...batch);
+    }
+    const sorted = allRecords.sort((a, b) => b.year - a.year || b.minScore - a.minScore);
+    const offset = options.offset ?? 0;
+    return sorted.slice(offset, offset + pageLimit);
+  }
+
+  const { sql, binds } = buildScoreRecordsWhere(options);
+  let query = `
+    SELECT s.id AS school_id, s.name AS school_name, s.short_name, s.district, s.type,
+           sl.year, sl.batch, sl.min_score, sl.max_score, sl.district_rank, sl.note
+    ${sql}
+    ORDER BY sl.year DESC, sl.min_score DESC
+    LIMIT ?`;
+  binds.push(pageLimit);
+
+  if (options.offset != null && options.offset > 0) {
+    query += ` OFFSET ?`;
+    binds.push(options.offset);
+  }
+
+  const { results } = await d1.prepare(query).bind(...binds).all<{
     school_id: string;
     school_name: string;
     short_name: string;
@@ -383,19 +455,26 @@ export async function queryScoreRecordsD1(
     note: string | null;
   }>();
 
-  return (results || []).map((row) => ({
-    schoolId: row.school_id,
-    schoolName: row.school_name,
-    shortName: row.short_name,
-    district: row.district,
-    type: row.type,
-    year: row.year,
-    batch: row.batch as AdmissionBatch,
-    minScore: row.min_score,
-    maxScore: row.max_score ?? undefined,
-    districtRank: row.district_rank ?? undefined,
-    note: row.note ?? undefined,
-  }));
+  return (results || []).map(mapScoreRecordRow);
+}
+
+/** 中文名称 SQL 搜索 */
+export async function querySchoolIdsByTextD1(
+  d1: D1Database,
+  query: string
+): Promise<string[]> {
+  const q = query.trim();
+  if (!q) return [];
+  const pattern = `%${q}%`;
+  const { results } = await d1
+    .prepare(
+      `SELECT id FROM schools
+       WHERE name LIKE ? OR short_name LIKE ? OR district LIKE ?
+       ORDER BY district, short_name`
+    )
+    .bind(pattern, pattern, pattern)
+    .all<{ id: string }>();
+  return (results || []).map((r) => r.id);
 }
 
 /** 拼音搜索用：仅加载学校基本信息 */
