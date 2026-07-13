@@ -98,28 +98,42 @@ export const getSchoolById = cache(async (id: string): Promise<School | undefine
   return loadSchoolsFromJson().find((s) => s.id === id);
 });
 
+export const SCHOOLS_PAGE_SIZE = 24;
+
 export const filterSchools = cache(
   async (options: {
     district?: string;
     type?: string;
     query?: string;
     hasScores?: boolean;
-  }): Promise<School[]> => {
+    page?: number;
+    pageSize?: number;
+  }): Promise<{ schools: School[]; total: number; page: number; pageSize: number }> => {
+    const pageSize = options.pageSize ?? SCHOOLS_PAGE_SIZE;
+    const page = Math.max(1, options.page ?? 1);
+    const offset = (page - 1) * pageSize;
     const schoolIds = options.query ? await resolveSchoolIdsByQuery(options.query) : undefined;
-    if (options.query && schoolIds?.length === 0) return [];
+    if (options.query && schoolIds?.length === 0) {
+      return { schools: [], total: 0, page, pageSize };
+    }
 
     const d1 = await getD1();
     if (d1) {
-      const { querySchoolsForListD1 } = await import("@/db/d1-queries");
-      return querySchoolsForListD1(d1, {
+      const { querySchoolsForListD1, countSchoolsD1 } = await import("@/db/d1-queries");
+      const filter = {
         district: options.district,
         type: options.type,
         hasScores: options.hasScores,
         schoolIds,
-      });
+      };
+      const [schools, total] = await Promise.all([
+        querySchoolsForListD1(d1, { ...filter, limit: pageSize, offset }),
+        countSchoolsD1(d1, filter),
+      ]);
+      return { schools, total, page, pageSize };
     }
 
-    return loadSchoolsFromJson().filter((school) => {
+    const filtered = loadSchoolsFromJson().filter((school) => {
       if (options.hasScores && school.scoreLines.length === 0) return false;
       if (options.district && options.district !== "全部" && school.district !== options.district)
         return false;
@@ -133,6 +147,9 @@ export const filterSchools = cache(
       }
       return true;
     });
+    const total = filtered.length;
+    const schools = filtered.slice(offset, offset + pageSize);
+    return { schools, total, page, pageSize };
   }
 );
 

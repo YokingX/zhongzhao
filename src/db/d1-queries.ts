@@ -143,13 +143,46 @@ export interface SchoolListFilter {
   type?: string;
   hasScores?: boolean;
   schoolIds?: string[];
+  limit?: number;
+  offset?: number;
 }
 
-/** 学校列表：仅附带最新统招线，避免全量分数线加载 */
-export async function querySchoolsForListD1(
-  d1: D1Database,
-  options: SchoolListFilter = {}
-): Promise<School[]> {
+const D1_MAX_BINDS = 99;
+
+function chunk<T>(items: T[], size: number): T[][] {
+  const chunks: T[][] = [];
+  for (let i = 0; i < items.length; i += size) {
+    chunks.push(items.slice(i, i + size));
+  }
+  return chunks;
+}
+
+async function queryLatestUnifiedScoresMapD1(
+  d1: D1Database
+): Promise<Map<string, (typeof schema.scoreLines.$inferSelect)[]>> {
+  const { results: latestLines } = await d1
+    .prepare(
+      `SELECT sl.* FROM score_lines sl
+       INNER JOIN (
+         SELECT school_id, MAX(year) AS max_year
+         FROM score_lines
+         WHERE batch = '统一招生'
+         GROUP BY school_id
+       ) latest ON sl.school_id = latest.school_id
+         AND sl.year = latest.max_year
+         AND sl.batch = '统一招生'`
+    )
+    .all<Record<string, unknown>>();
+
+  const linesBySchool = new Map<string, (typeof schema.scoreLines.$inferSelect)[]>();
+  for (const row of latestLines || []) {
+    const line = mapScoreLineRow(row);
+    linesBySchool.set(line.schoolId, [line]);
+  }
+  return linesBySchool;
+}
+
+function buildSchoolListSql(options: SchoolListFilter, schoolIds?: string[]) {
   let sql = `SELECT * FROM schools WHERE 1=1`;
   const binds: unknown[] = [];
 
@@ -164,43 +197,95 @@ export async function querySchoolsForListD1(
   if (options.hasScores) {
     sql += ` AND id IN (SELECT DISTINCT school_id FROM score_lines)`;
   }
+  if (schoolIds?.length) {
+    sql += ` AND id IN (${schoolIds.map(() => "?").join(",")})`;
+    binds.push(...schoolIds);
+  }
+
+  return { sql, binds };
+}
+
+async function querySchoolRowsD1(
+  d1: D1Database,
+  options: SchoolListFilter
+): Promise<Record<string, unknown>[]> {
+  if (options.schoolIds && options.schoolIds.length === 0) return [];
+
+  const base = { district: options.district, type: options.type, hasScores: options.hasScores };
+  let rows: Record<string, unknown>[] = [];
+
   if (options.schoolIds?.length) {
-    sql += ` AND id IN (${options.schoolIds.map(() => "?").join(",")})`;
-    binds.push(...options.schoolIds);
-  } else if (options.schoolIds && options.schoolIds.length === 0) {
-    return [];
+    for (const ids of chunk(options.schoolIds, D1_MAX_BINDS)) {
+      const { sql, binds } = buildSchoolListSql(base, ids);
+      const { results } = await d1
+        .prepare(`${sql} ORDER BY district, short_name`)
+        .bind(...binds)
+        .all<Record<string, unknown>>();
+      rows.push(...(results || []));
+    }
+    const seen = new Set<string>();
+    rows = rows.filter((r) => {
+      const id = r.id as string;
+      if (seen.has(id)) return false;
+      seen.add(id);
+      return true;
+    });
+    rows.sort((a, b) => {
+      const d = String(a.district).localeCompare(String(b.district), "zh");
+      if (d !== 0) return d;
+      return String(a.short_name).localeCompare(String(b.short_name), "zh");
+    });
+  } else {
+    const { sql, binds } = buildSchoolListSql(base);
+    let query = `${sql} ORDER BY district, short_name`;
+    if (options.limit != null) {
+      query += ` LIMIT ?`;
+      binds.push(options.limit);
+      if (options.offset != null) {
+        query += ` OFFSET ?`;
+        binds.push(options.offset);
+      }
+    }
+    const { results } = await d1.prepare(query).bind(...binds).all<Record<string, unknown>>();
+    rows = results || [];
   }
 
-  sql += ` ORDER BY district, short_name`;
+  if (options.limit != null && options.schoolIds?.length) {
+    const start = options.offset ?? 0;
+    rows = rows.slice(start, start + options.limit);
+  }
 
-  const { results: schoolRows } = await d1
-    .prepare(sql)
+  return rows;
+}
+
+export async function countSchoolsD1(
+  d1: D1Database,
+  options: Omit<SchoolListFilter, "limit" | "offset"> = {}
+): Promise<number> {
+  if (options.schoolIds && options.schoolIds.length === 0) return 0;
+
+  if (options.schoolIds?.length) {
+    const rows = await querySchoolRowsD1(d1, { ...options, limit: undefined, offset: undefined });
+    return rows.length;
+  }
+
+  const { sql, binds } = buildSchoolListSql(options);
+  const row = await d1
+    .prepare(`SELECT COUNT(*) AS count FROM (${sql})`)
     .bind(...binds)
-    .all<Record<string, unknown>>();
-  if (!schoolRows?.length) return [];
+    .first<{ count: number }>();
+  return row?.count ?? 0;
+}
 
-  const ids = schoolRows.map((r) => r.id as string);
-  const placeholders = ids.map(() => "?").join(",");
-  const { results: latestLines } = await d1
-    .prepare(
-      `SELECT sl.* FROM score_lines sl
-       INNER JOIN (
-         SELECT school_id, MAX(year) AS max_year
-         FROM score_lines
-         WHERE batch = '统一招生' AND school_id IN (${placeholders})
-         GROUP BY school_id
-       ) latest ON sl.school_id = latest.school_id
-         AND sl.year = latest.max_year
-         AND sl.batch = '统一招生'`
-    )
-    .bind(...ids)
-    .all<Record<string, unknown>>();
+/** 学校列表：仅附带最新统招线；分数线一次查全表，避免 D1 100 参数上限 */
+export async function querySchoolsForListD1(
+  d1: D1Database,
+  options: SchoolListFilter = {}
+): Promise<School[]> {
+  const schoolRows = await querySchoolRowsD1(d1, options);
+  if (!schoolRows.length) return [];
 
-  const linesBySchool = new Map<string, (typeof schema.scoreLines.$inferSelect)[]>();
-  for (const row of latestLines || []) {
-    const line = mapScoreLineRow(row);
-    linesBySchool.set(line.schoolId, [line]);
-  }
+  const linesBySchool = await queryLatestUnifiedScoresMapD1(d1);
 
   return schoolRows.map((row) =>
     rowToSchool(mapSchoolRow(row), linesBySchool.get(row.id as string) || [])
@@ -235,6 +320,19 @@ export async function queryScoreRecordsD1(
   d1: D1Database,
   options: ScoreRecordFilter = {}
 ): Promise<D1ScoreRecord[]> {
+  if (options.schoolIds && options.schoolIds.length === 0) return [];
+
+  if (options.schoolIds && options.schoolIds.length > D1_MAX_BINDS) {
+    const allRecords: D1ScoreRecord[] = [];
+    for (const ids of chunk(options.schoolIds, D1_MAX_BINDS)) {
+      const batch = await queryScoreRecordsD1(d1, { ...options, schoolIds: ids, limit: undefined });
+      allRecords.push(...batch);
+    }
+    return allRecords
+      .sort((a, b) => b.year - a.year || b.minScore - a.minScore)
+      .slice(0, options.limit ?? 1000);
+  }
+
   let sql = `
     SELECT s.id AS school_id, s.name AS school_name, s.short_name, s.district, s.type,
            sl.year, sl.batch, sl.min_score, sl.max_score, sl.district_rank, sl.note
@@ -266,8 +364,6 @@ export async function queryScoreRecordsD1(
   if (options.schoolIds?.length) {
     sql += ` AND s.id IN (${options.schoolIds.map(() => "?").join(",")})`;
     binds.push(...options.schoolIds);
-  } else if (options.schoolIds && options.schoolIds.length === 0) {
-    return [];
   }
 
   sql += ` ORDER BY sl.year DESC, sl.min_score DESC LIMIT ?`;
