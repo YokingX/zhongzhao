@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { filterSchools, getDistricts, getAllSchools, getSchoolsWithScores } from "@/lib/schools";
+import { filterSchools, getDistricts, getSchoolCounts } from "@/lib/schools";
 import { SCHOOL_TYPES } from "@/types/school";
 import { SchoolCard, SchoolFilter } from "@/components/schools/SchoolCard";
 import { DataDisclaimer } from "@/components/layout/DataDisclaimer";
@@ -27,8 +27,7 @@ export default async function SchoolsPage({ searchParams }: PageProps) {
     hasScores: params.hasScores === "1",
   });
   const districts = await getDistricts();
-  const total = (await getAllSchools()).length;
-  const withScores = await getSchoolsWithScores();
+  const { total, withScores } = await getSchoolCounts();
 
   return (
     <div className="mx-auto max-w-6xl px-4 py-8">

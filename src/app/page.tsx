@@ -3,7 +3,7 @@ import { School, BarChart3, BookOpen, ClipboardList, Calendar, ArrowRight } from
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { getAllSchools, getSchoolsWithScores } from "@/lib/schools";
+import { getSchoolCounts } from "@/lib/schools";
 import { getAllPolicies } from "@/lib/policies";
 
 function getDaysUntil(dateStr: string): number {
@@ -52,8 +52,7 @@ const keyDates = [
 ];
 
 export default async function HomePage() {
-  const schools = await getAllSchools();
-  const withScores = await getSchoolsWithScores();
+  const { total: schoolCount, withScores } = await getSchoolCounts();
   const policies = getAllPolicies().slice(0, 3);
   const zhongkaoDays = getDaysUntil("2026-06-24");
   const volunteerDays = getDaysUntil("2026-07-13");
@@ -82,7 +81,7 @@ export default async function HomePage() {
               <div className="text-sm text-blue-100">距离志愿填报（天）</div>
             </div>
             <div className="rounded-xl bg-white/10 px-6 py-4 backdrop-blur">
-              <div className="text-3xl font-bold">{schools.length}</div>
+              <div className="text-3xl font-bold">{schoolCount}</div>
               <div className="text-sm text-blue-100">收录普高（所）</div>
             </div>
             <div className="rounded-xl bg-white/10 px-6 py-4 backdrop-blur">
