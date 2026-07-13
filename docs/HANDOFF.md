@@ -7,17 +7,19 @@
 
 北京中考升学指导网站，帮助初三学生及家长查询普高信息、分数线、政策与填报攻略。
 
-- **仓库**：https://github.com/YokingX/zhongzhao
+- **仓库**：[https://github.com/YokingX/zhongzhao](https://github.com/YokingX/zhongzhao)
 - **本地路径**：`/Users/zhaixiuchen/Dev/ai/zhongzhao`
 
 ## 数据架构（核心）
 
 **D1 是唯一数据库**。`schools.json` 仅为构建/种子中间产物，不是运行时数据源。
 
-| 环境 | D1 实例 | 用途 | 写入方式 |
-|------|---------|------|----------|
-| **本地** | `wrangler --local`（`.wrangler/state/`） | 开发、测试 | `npm run sync:data`、`npm run d1:seed` |
-| **线上** | Cloudflare 远程 `zhongzhao-db` | 生产 | Cron `/sync` 抓取更新；全量刷新用 `d1:seed:remote` |
+
+| 环境     | D1 实例                                  | 用途    | 写入方式                                     |
+| ------ | -------------------------------------- | ----- | ---------------------------------------- |
+| **本地** | `wrangler --local`（`.wrangler/state/`） | 开发、测试 | `npm run sync:data`、`npm run d1:seed`    |
+| **线上** | Cloudflare 远程 `zhongzhao-db`           | 生产    | Cron `/sync` 抓取更新；全量刷新用 `d1:seed:remote` |
+
 
 ```
 抓取源 ──▶ generate:schools ──▶ schools.json（中间产物）
@@ -35,18 +37,22 @@
 
 ## 线上环境
 
-| 服务 | URL |
-|------|-----|
-| 网站 | https://zhongzhao-web.zhaixiuchen.workers.dev |
-| 同步 Worker | https://zhongzhao-sync.zhaixiuchen.workers.dev |
-| 健康检查 | https://zhongzhao-sync.zhaixiuchen.workers.dev/health |
-| 同步日志 | https://zhongzhao-sync.zhaixiuchen.workers.dev/logs |
+
+| 服务        | URL                                                                                                            |
+| --------- | -------------------------------------------------------------------------------------------------------------- |
+| 网站        | [https://zhongzhao-web.zhaixiuchen.workers.dev](https://zhongzhao-web.zhaixiuchen.workers.dev)                 |
+| 同步 Worker | [https://zhongzhao-sync.zhaixiuchen.workers.dev](https://zhongzhao-sync.zhaixiuchen.workers.dev)               |
+| 健康检查      | [https://zhongzhao-sync.zhaixiuchen.workers.dev/health](https://zhongzhao-sync.zhaixiuchen.workers.dev/health) |
+| 同步日志      | [https://zhongzhao-sync.zhaixiuchen.workers.dev/logs](https://zhongzhao-sync.zhaixiuchen.workers.dev/logs)     |
+
 
 ### Cloudflare 资源
 
-| 资源 | ID / 名称 |
-|------|-----------|
+
+| 资源     | ID / 名称                                                 |
+| ------ | ------------------------------------------------------- |
 | D1 数据库 | `zhongzhao-db` / `e33030b9-7326-43ae-bcd7-5b0a54d2b1be` |
+
 
 ### Cron（UTC，见 `wrangler.sync.jsonc`）
 
@@ -78,6 +84,9 @@ npm run deploy
 # git push 若 github.com:443 超时，可用 API 推送（需 gh 已登录）
 npm run push:gh
 
+# 首次配置 GitHub 网络（SSH over 443 + HTTP/1.1）
+bash scripts/setup-github-network.sh
+
 # 仅 UI 快速迭代（不连 D1，读 schools.json）
 npm run dev:next
 ```
@@ -90,6 +99,7 @@ workers/sync/index.ts      # Cron → 远程 D1
 scripts/fetch-core.mjs     # 抓取核心（别名见 score-aliases.mjs）
 scripts/score-aliases.mjs  # SCORE_ALIASES + FETCH_NAME_ALIASES 统一别名表
 scripts/audit-aliases.mjs    # 别名映射缺口审计
+scripts/setup-github-network.sh  # GitHub SSH over 443 + Deploy Key
 scripts/d1-seed.mjs        # schools.json → D1（local / remote）
 scripts/dev.mjs            # 本地 preview + 本地 D1
 src/db/d1-queries.ts       # D1 查询
@@ -101,10 +111,10 @@ wrangler.sync.jsonc        # Sync Worker（远程 D1）
 ## 路线图
 
 - 阶段 0–1 ✅ MVP + Cloudflare 生产化
-- 阶段 2 🔄 数据质量（进行中）
+- 阶段 2 ✅ 数据质量
   - ✅ `/health` 数据质量指标（校数、分数线、失败源、各源状态）
   - ✅ 别名合并至 `score-aliases.mjs`（`FETCH_NAME_ALIASES`）
-  - ✅ `npm run audit:aliases` 审计脚本（当前约 119 校待补别名）
+  - ✅ `npm run audit:aliases` 审计脚本（全部通过，306 条 FETCH 别名）
   - ✅ 外围区：移除 `outer-districts-24-25-est` 预估源，改用 `outer-districts-2024-ranks`（区排名）+ 通州/大兴/经开 2024 汇总（共 22 抓取源）
   - ✅ 别名批量补全（audit 全部通过，306 条 FETCH 别名）
 - 阶段 3 🎯 产品增强（趋势图、攻略互动）
@@ -117,3 +127,4 @@ wrangler.sync.jsonc        # Sync Worker（远程 D1）
 请先阅读 docs/HANDOFF.md 和 docs/cloudflare.md。
 线上：https://zhongzhao-web.zhaixiuchen.workers.dev
 ```
+
