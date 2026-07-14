@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname, useSearchParams } from "next/navigation";
-import { Home, School, BarChart3, ClipboardList, BookOpen } from "lucide-react";
+import { Home, School, BarChart3, ClipboardList, MessageSquareText } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const items = [
@@ -20,7 +20,12 @@ const items = [
     match: (p: string) => p === "/scores" || p.startsWith("/scores/"),
   },
   { href: "/guide", label: "攻略", icon: ClipboardList, match: (p: string) => p.startsWith("/guide") },
-  { href: "/policies", label: "政策", icon: BookOpen, match: (p: string) => p.startsWith("/policies") },
+  {
+    href: "/assist",
+    label: "助手",
+    icon: MessageSquareText,
+    match: (p: string) => p.startsWith("/assist"),
+  },
 ];
 
 function listHref(base: string, pathname: string, qs: string): string {

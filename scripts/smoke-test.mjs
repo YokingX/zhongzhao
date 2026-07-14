@@ -98,6 +98,8 @@ const routes = [
   "/scores?district=朝阳&year=2025&batch=统一招生",
   "/policies",
   "/guide",
+  "/assist",
+  "/faq",
   "/timeline",
   "/open",
   "/fallback.html",

@@ -11,6 +11,7 @@ const navItems = [
   { href: "/schools", label: "学校库" },
   { href: "/compare", label: "学校对比" },
   { href: "/scores", label: "分数线" },
+  { href: "/assist", label: "AI助手" },
   { href: "/guide", label: "填报攻略" },
   { href: "/policies", label: "政策解读" },
   { href: "/faq", label: "常见问题" },

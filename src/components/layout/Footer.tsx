@@ -42,6 +42,11 @@ export function Footer() {
                 </Link>
               </li>
               <li>
+                <Link href="/assist" className="text-primary hover:underline">
+                  AI 志愿助手
+                </Link>
+              </li>
+              <li>
                 <Link href="/guide" className="text-primary hover:underline">
                   志愿填报攻略
                 </Link>

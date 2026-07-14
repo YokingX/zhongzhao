@@ -194,6 +194,9 @@ export default function GuidePage() {
           <Link href="/policies">阅读政策解读</Link>
         </Button>
         <Button variant="outline" asChild>
+          <Link href="/assist">AI 志愿助手</Link>
+        </Button>
+        <Button variant="outline" asChild>
           <Link href="/faq">常见问题</Link>
         </Button>
         <Button variant="outline" asChild>
