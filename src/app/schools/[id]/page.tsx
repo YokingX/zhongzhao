@@ -10,6 +10,7 @@ import { ScoreChart } from "@/components/scores/ScoreChart";
 import { SITE_URL } from "@/lib/site";
 import { getLatestScore } from "@/lib/school-utils";
 import { DataDisclaimer } from "@/components/layout/DataDisclaimer";
+import { CompareAddButton } from "@/components/compare/CompareAddButton";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 interface PageProps {
@@ -67,9 +68,12 @@ export default async function SchoolDetailPage({ params }: PageProps) {
         返回学校库
       </Link>
 
-      <div className="mb-8">
-        <h1 className="mb-1 text-3xl font-bold">{school.name}</h1>
-        <p className="text-lg text-muted-foreground">{school.shortName}</p>
+      <div className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+        <div>
+          <h1 className="mb-1 text-3xl font-bold">{school.name}</h1>
+          <p className="text-lg text-muted-foreground">{school.shortName}</p>
+        </div>
+        <CompareAddButton schoolId={school.id} size="default" />
       </div>
 
       <div className="grid gap-8 lg:grid-cols-3">

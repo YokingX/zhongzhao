@@ -4,6 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { School } from "@/types/school";
 import { getLatestScore, formatScore } from "@/lib/school-utils";
+import { CompareAddButton } from "@/components/compare/CompareAddButton";
 
 interface SchoolCardProps {
   school: School;
@@ -13,8 +14,8 @@ export function SchoolCard({ school }: SchoolCardProps) {
   const latestScore = getLatestScore(school);
 
   return (
-    <Link href={`/schools/${school.id}`}>
-      <Card className="h-full transition-shadow hover:shadow-md">
+    <Card className="flex h-full flex-col transition-shadow hover:shadow-md">
+      <Link href={`/schools/${school.id}`} className="flex-1">
         <CardHeader className="pb-3">
           <div className="flex items-start justify-between gap-2">
             <CardTitle className="text-base leading-snug">{school.shortName}</CardTitle>
@@ -27,7 +28,7 @@ export function SchoolCard({ school }: SchoolCardProps) {
           </div>
           <p className="text-sm text-muted-foreground line-clamp-1">{school.name}</p>
         </CardHeader>
-        <CardContent>
+        <CardContent className="pt-0">
           <div className="mb-3 flex items-center gap-1 text-sm text-muted-foreground">
             <MapPin className="h-3.5 w-3.5" />
             {school.district}区
@@ -57,8 +58,11 @@ export function SchoolCard({ school }: SchoolCardProps) {
             <div className="text-xs text-muted-foreground">暂无公开分数线</div>
           )}
         </CardContent>
-      </Card>
-    </Link>
+      </Link>
+      <div className="border-t border-border px-4 py-2">
+        <CompareAddButton schoolId={school.id} variant="ghost" className="h-8 w-full" />
+      </div>
+    </Card>
   );
 }
 

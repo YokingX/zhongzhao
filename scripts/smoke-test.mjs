@@ -90,6 +90,8 @@ async function fetchRoute(path) {
 const routes = [
   "/",
   "/schools",
+  "/compare",
+  "/compare?ids=hd-1yv0spl,xc-36caut,dc-354hnq",
   "/scores",
   "/scores?year=2025&batch=统一招生",
   "/policies",

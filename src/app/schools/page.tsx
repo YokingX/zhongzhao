@@ -70,7 +70,11 @@ export default async function SchoolsPage({ searchParams }: PageProps) {
         <h1 className="mb-2 text-3xl font-bold">学校库</h1>
         <p className="text-muted-foreground">
           收录北京市教委公示的 {allTotal} 所普通高中（含示范性高中和重点校），
-          其中 {withScores} 所有历年统招分数线数据。点击下方行政区卡片查看对应学校。
+          其中 {withScores} 所有历年统招分数线数据。点击下方行政区卡片查看对应学校；也可
+          <Link href="/compare" className="mx-1 text-primary hover:underline">
+            学校对比
+          </Link>
+          并排比较最多 3 所。
         </p>
       </div>
 

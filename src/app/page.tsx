@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { School, BarChart3, BookOpen, ClipboardList, Calendar, ArrowRight, Smartphone } from "lucide-react";
+import { School, BarChart3, BookOpen, ClipboardList, Calendar, ArrowRight, Smartphone, GitCompare } from "lucide-react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -20,6 +20,13 @@ const quickLinks = [
     title: "学校库",
     description: "浏览北京优质高中信息",
     color: "bg-blue-50 text-blue-700",
+  },
+  {
+    href: "/compare",
+    icon: GitCompare,
+    title: "学校对比",
+    description: "最多 3 所并排比较",
+    color: "bg-teal-50 text-teal-700",
   },
   {
     href: "/scores",

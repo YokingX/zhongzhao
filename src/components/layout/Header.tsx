@@ -9,6 +9,7 @@ import { cn } from "@/lib/utils";
 const navItems = [
   { href: "/", label: "首页" },
   { href: "/schools", label: "学校库" },
+  { href: "/compare", label: "学校对比" },
   { href: "/scores", label: "分数线" },
   { href: "/policies", label: "政策解读" },
   { href: "/guide", label: "填报攻略" },
