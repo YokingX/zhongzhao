@@ -5,6 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { getSchoolCounts } from "@/lib/schools";
 import { getAllPolicies } from "@/lib/policies";
+import { getZhongkaoHeroStatus } from "@/lib/zhongkao-schedule";
 
 function getDaysUntil(dateStr: string): number {
   const target = new Date(dateStr);
@@ -75,7 +76,7 @@ const keyDates = [
 export default async function HomePage() {
   const { total: schoolCount, withScores } = await getSchoolCounts();
   const policies = getAllPolicies().slice(0, 3);
-  const zhongkaoDays = getDaysUntil("2026-06-24");
+  const zhongkao = getZhongkaoHeroStatus();
   const volunteerDays = getDaysUntil("2026-07-13");
 
   return (
@@ -101,8 +102,17 @@ export default async function HomePage() {
           </p>
           <div className="flex flex-wrap gap-4">
             <div className="rounded-xl bg-white/10 px-6 py-4 backdrop-blur">
-              <div className="text-3xl font-bold">{zhongkaoDays > 0 ? zhongkaoDays : 0}</div>
-              <div className="text-sm text-blue-100">距离中考（天）</div>
+              {zhongkao.phase === "ongoing" ? (
+                <>
+                  <div className="text-2xl font-bold sm:text-3xl">{zhongkao.title}</div>
+                  <div className="mt-1 text-sm text-blue-100">{zhongkao.subtitle}</div>
+                </>
+              ) : (
+                <>
+                  <div className="text-3xl font-bold">{zhongkao.title}</div>
+                  <div className="text-sm text-blue-100">{zhongkao.subtitle}</div>
+                </>
+              )}
             </div>
             <div className="rounded-xl bg-white/10 px-6 py-4 backdrop-blur">
               <div className="text-3xl font-bold">{volunteerDays > 0 ? volunteerDays : 0}</div>
