@@ -7,6 +7,8 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { GuideScoreAdvisor } from "@/components/guide/GuideScoreAdvisor";
+import { VolunteerDraft } from "@/components/guide/VolunteerDraft";
+import { DataFreshnessBar } from "@/components/layout/DataFreshnessBar";
 
 const batches = [
   {
@@ -76,7 +78,13 @@ export default function GuidePage() {
         </p>
       </div>
 
+      <DataFreshnessBar className="mb-6" />
+
       <GuideScoreAdvisor />
+
+      <div id="volunteer-draft">
+        <VolunteerDraft />
+      </div>
 
       {/* Eligibility Check */}
       <Card className="mb-8">
@@ -186,7 +194,10 @@ export default function GuidePage() {
           <Link href="/policies">阅读政策解读</Link>
         </Button>
         <Button variant="outline" asChild>
-          <Link href="/timeline">查看升学日历</Link>
+          <Link href="/faq">常见问题</Link>
+        </Button>
+        <Button variant="outline" asChild>
+          <Link href="/compare">学校对比</Link>
         </Button>
       </div>
     </div>

@@ -149,7 +149,7 @@ export function GuideScoreAdvisor() {
               <div className="grid gap-3 sm:grid-cols-2">
                 {bands.map((band) => {
                   const [clampedMin, clampedMax] = band.range;
-                  const href = `/scores?year=${queryYear}&batch=统一招生&minScore=${clampedMin}&maxScore=${clampedMax}`;
+                  const href = `/scores?year=${queryYear}&batch=${encodeURIComponent("统一招生")}&minScore=${clampedMin}&maxScore=${clampedMax}`;
                   return (
                     <div
                       key={band.label}
@@ -163,7 +163,7 @@ export function GuideScoreAdvisor() {
                       </div>
                       <p className="mb-2 text-xs text-muted-foreground">{band.tip}</p>
                       <Link href={href} className="text-xs text-primary hover:underline">
-                        查看该区间学校 →
+                        查看该区间分数线 →
                       </Link>
                     </div>
                   );
@@ -173,14 +173,19 @@ export function GuideScoreAdvisor() {
 
             <div className="flex flex-wrap gap-3">
               <Button asChild size="sm">
-                <Link
-                  href={`/scores?year=${queryYear}&batch=统一招生&minScore=${Math.max(1, displayScore - 15)}&maxScore=${Math.min(scoreMax, displayScore + 15)}`}
-                >
-                  查看估分 ±15 分学校
+                <Link href={`/guide/suggest?score=${displayScore}&year=${queryYear}`}>
+                  一键生成学校清单
                 </Link>
               </Button>
               <Button variant="outline" size="sm" asChild>
-                <Link href={`/scores?year=${queryYear}&district=全部`}>浏览全部分数线</Link>
+                <Link
+                  href={`/scores?year=${queryYear}&batch=${encodeURIComponent("统一招生")}&minScore=${Math.max(1, displayScore - 15)}&maxScore=${Math.min(scoreMax, displayScore + 15)}`}
+                >
+                  查看估分 ±15 分
+                </Link>
+              </Button>
+              <Button variant="outline" size="sm" asChild>
+                <Link href="/scores">浏览分数线</Link>
               </Button>
             </div>
           </>

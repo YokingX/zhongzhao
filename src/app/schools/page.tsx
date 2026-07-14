@@ -13,6 +13,7 @@ import {
   parsePage,
 } from "@/lib/search-params";
 import { DataDisclaimer } from "@/components/layout/DataDisclaimer";
+import { DataFreshnessBar } from "@/components/layout/DataFreshnessBar";
 import { Button } from "@/components/ui/button";
 
 export const metadata: Metadata = {
@@ -77,6 +78,8 @@ export default async function SchoolsPage({ searchParams }: PageProps) {
           并排比较最多 3 所。
         </p>
       </div>
+
+      <DataFreshnessBar className="mb-6" />
 
       <div className="mb-8">
         <SchoolFilter

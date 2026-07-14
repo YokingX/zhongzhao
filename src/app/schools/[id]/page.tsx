@@ -11,6 +11,7 @@ import { SITE_URL } from "@/lib/site";
 import { getLatestScore } from "@/lib/school-utils";
 import { DataDisclaimer } from "@/components/layout/DataDisclaimer";
 import { CompareAddButton } from "@/components/compare/CompareAddButton";
+import { ShareLinkButton } from "@/components/layout/ShareLinkButton";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 interface PageProps {
@@ -73,7 +74,15 @@ export default async function SchoolDetailPage({ params }: PageProps) {
           <h1 className="mb-1 text-3xl font-bold">{school.name}</h1>
           <p className="text-lg text-muted-foreground">{school.shortName}</p>
         </div>
-        <CompareAddButton schoolId={school.id} size="default" />
+        <div className="flex flex-wrap gap-2">
+          <CompareAddButton schoolId={school.id} size="default" />
+          <ShareLinkButton
+            title={school.shortName}
+            summary={`${school.district}区 · ${school.type} · ${school.name}`}
+            url={`${SITE_URL}/schools/${school.id}`}
+            size="default"
+          />
+        </div>
       </div>
 
       <div className="grid gap-8 lg:grid-cols-3">

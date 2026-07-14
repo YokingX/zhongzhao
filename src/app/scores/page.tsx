@@ -11,6 +11,7 @@ import { ScoreFilter } from "@/components/scores/ScoreFilter";
 import { ScoreDistrictGrid } from "@/components/scores/ScoreDistrictGrid";
 import { buildScoresUrl, type ScoreFilterParams } from "@/lib/scores-url";
 import { DataDisclaimer } from "@/components/layout/DataDisclaimer";
+import { DataFreshnessBar } from "@/components/layout/DataFreshnessBar";
 import { Button } from "@/components/ui/button";
 import {
   firstParam,
@@ -124,6 +125,8 @@ export default async function ScoresPage({ searchParams }: PageProps) {
           </p>
         )}
       </div>
+
+      <DataFreshnessBar className="mb-6" />
 
       <div className="mb-8">
         <ScoreFilter

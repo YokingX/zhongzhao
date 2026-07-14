@@ -11,8 +11,11 @@ import {
 import { firstParam } from "@/lib/search-params";
 import { CompareTable } from "@/components/compare/CompareTable";
 import { DataDisclaimer } from "@/components/layout/DataDisclaimer";
+import { DataFreshnessBar } from "@/components/layout/DataFreshnessBar";
+import { ShareLinkButton } from "@/components/layout/ShareLinkButton";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { SITE_URL } from "@/lib/site";
 
 export const metadata: Metadata = {
   title: "学校对比",
@@ -47,9 +50,18 @@ export default async function ComparePage({ searchParams }: PageProps) {
   return (
     <div className="mx-auto max-w-6xl px-4 py-8">
       <div className="mb-8">
-        <div className="mb-2 flex items-center gap-2">
-          <GitCompare className="h-7 w-7 text-primary" />
-          <h1 className="text-3xl font-bold">学校对比</h1>
+        <div className="mb-2 flex flex-wrap items-center justify-between gap-3">
+          <div className="flex items-center gap-2">
+            <GitCompare className="h-7 w-7 text-primary" />
+            <h1 className="text-3xl font-bold">学校对比</h1>
+          </div>
+          {schools.length >= 2 && (
+            <ShareLinkButton
+              title={schools.map((s) => s.shortName).join(" vs ")}
+              summary="北京高中并排对比（统招线 / 区排名）"
+              url={`${SITE_URL}/compare?ids=${foundIds.join(",")}`}
+            />
+          )}
         </div>
         <p className="text-muted-foreground">
           最多同时对比 {MAX_COMPARE_SCHOOLS} 所学校。可并排查看行政区、类型、历年统招线与区排名。
@@ -60,6 +72,8 @@ export default async function ComparePage({ searchParams }: PageProps) {
           )}
         </p>
       </div>
+
+      <DataFreshnessBar className="mb-6" />
 
       {missing.length > 0 && (
         <div className="mb-4 rounded-lg border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-950">

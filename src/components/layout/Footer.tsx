@@ -27,6 +27,16 @@ export function Footer() {
                 </a>
               </li>
               <li>
+                <Link href="/compare" className="text-primary hover:underline">
+                  学校对比
+                </Link>
+              </li>
+              <li>
+                <Link href="/faq" className="text-primary hover:underline">
+                  常见问题
+                </Link>
+              </li>
+              <li>
                 <Link href="/policies" className="text-primary hover:underline">
                   政策解读
                 </Link>
@@ -44,6 +54,10 @@ export function Footer() {
           <p className="mt-2">
             <Link href="/open" className="text-primary hover:underline">
               手机访问指南
+            </Link>
+            <span className="mx-2 text-border">·</span>
+            <Link href="/faq" className="text-primary hover:underline">
+              常见问题
             </Link>
             <span className="mx-2 text-border">·</span>
             <a href="/fallback.html" className="text-primary hover:underline">

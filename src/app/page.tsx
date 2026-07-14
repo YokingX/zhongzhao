@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { School, BarChart3, BookOpen, ClipboardList, Calendar, ArrowRight, Smartphone, GitCompare } from "lucide-react";
+import { School, BarChart3, BookOpen, ClipboardList, Calendar, ArrowRight, Smartphone, GitCompare, HelpCircle } from "lucide-react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -48,6 +48,13 @@ const quickLinks = [
     title: "填报攻略",
     description: "志愿填报技巧指南",
     color: "bg-orange-50 text-orange-700",
+  },
+  {
+    href: "/faq",
+    icon: HelpCircle,
+    title: "常见问题",
+    description: "冲稳保、校额到校等答疑",
+    color: "bg-rose-50 text-rose-700",
   },
 ];
 
