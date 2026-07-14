@@ -48,3 +48,6 @@ data/d1-seed.sql
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# git worktrees
+.worktrees/
