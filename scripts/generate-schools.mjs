@@ -4,6 +4,7 @@ import { fileURLToPath } from "url";
 import { OFFICIAL_SCHOOLS, KEY_SCHOOLS, PRIVATE_KEYWORDS } from "./school-list.mjs";
 import { SCORE_DATA, SCORE_SCALES } from "./score-data.mjs";
 import { SCORE_ALIASES } from "./score-aliases.mjs";
+import { isPlausibleMinScore } from "./score-validate.mjs";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const OUT = path.join(__dirname, "../src/data/schools.json");
@@ -127,6 +128,7 @@ function buildScoreLines(name) {
   for (const [yearStr, vals] of Object.entries(data)) {
     const year = Number(yearStr);
     const [minScore, districtRank] = vals;
+    if (!isPlausibleMinScore(year, minScore)) continue;
     lines.push({
       year,
       batch: "统一招生",

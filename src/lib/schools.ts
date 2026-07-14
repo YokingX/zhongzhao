@@ -103,13 +103,20 @@ export const getSchoolCounts = cache(async (): Promise<{ total: number; withScor
 });
 
 export const getSchoolById = cache(async (id: string): Promise<School | undefined> => {
-  const d1 = await getD1();
-  if (d1) {
-    const { querySchoolByIdD1 } = await import("@/db/d1-queries");
-    const school = await querySchoolByIdD1(d1, id);
-    if (school) return school;
+  try {
+    const d1 = await getD1();
+    if (d1) {
+      const { querySchoolByIdD1 } = await import("@/db/d1-queries");
+      const school = await querySchoolByIdD1(d1, id);
+      if (school) return school;
+    }
+  } catch (error) {
+    console.error("[zhongzhao] getSchoolById D1 failed, fallback JSON", id, error);
   }
-  return loadSchoolsFromJson().find((s) => s.id === id);
+  const { filterPlausibleScoreLines } = await import("@/lib/score-validate");
+  const school = loadSchoolsFromJson().find((s) => s.id === id);
+  if (!school) return undefined;
+  return { ...school, scoreLines: filterPlausibleScoreLines(school.scoreLines) };
 });
 
 export const filterSchools = cache(

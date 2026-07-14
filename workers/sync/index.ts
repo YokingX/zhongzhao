@@ -2,6 +2,7 @@
  * Cloudflare Cron Worker：定时抓取分数线并写入 D1
  */
 import { runFetch, normalizeSchoolName } from "../../scripts/fetch-core.mjs";
+import { isPlausibleMinScore } from "../../scripts/score-validate.mjs";
 import { evaluateDataHealth } from "../../src/lib/health";
 
 const SCORE_SCALES: Record<number, number> = {
@@ -57,6 +58,7 @@ async function applyFetchedScores(
 
     for (const [yearStr, [minScore, districtRank]] of Object.entries(years)) {
       const year = Number(yearStr);
+      if (!isPlausibleMinScore(year, minScore)) continue;
       const maxScore = SCORE_SCALES[year] ?? null;
       const rank =
         districtRank != null && !Number.isNaN(districtRank) ? districtRank : null;

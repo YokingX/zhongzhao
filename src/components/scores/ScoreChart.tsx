@@ -11,6 +11,7 @@ import {
   Legend,
 } from "recharts";
 import { AdmissionBatch, SCORE_SCALES } from "@/types/school";
+import { isPlausibleMinScore } from "@/lib/score-validate";
 
 interface ScoreChartProps {
   scoreLines: {
@@ -25,7 +26,7 @@ interface ScoreChartProps {
 
 export function ScoreChart({ scoreLines, batch = "统一招生" }: ScoreChartProps) {
   const filtered = scoreLines
-    .filter((l) => l.batch === batch)
+    .filter((l) => l.batch === batch && isPlausibleMinScore(l.year, l.minScore))
     .sort((a, b) => a.year - b.year);
 
   const data = filtered.map((l) => {

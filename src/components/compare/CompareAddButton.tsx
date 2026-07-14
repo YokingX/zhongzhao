@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import Link from "next/link";
 import { GitCompare } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -70,9 +69,10 @@ export function CompareAddButton({
     );
   }
 
+  // 使用原生 <a>，避免部分内置浏览器下 Next Link 软导航失败
   return (
     <Button variant={variant} size={size} className={className} asChild>
-      <Link href={href} onClick={handleClick}>
+      <a href={href} onClick={handleClick}>
         <GitCompare className="mr-1.5 h-4 w-4" />
         {alreadyIn
           ? "查看对比"
@@ -81,7 +81,7 @@ export function CompareAddButton({
             : schoolName
               ? `对比${schoolName}`
               : "加入对比"}
-      </Link>
+      </a>
     </Button>
   );
 }

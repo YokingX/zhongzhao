@@ -2,6 +2,7 @@
  * 抓取核心逻辑（无文件系统依赖，可在 Cloudflare Worker 中使用）
  */
 import { FETCH_NAME_ALIASES } from "./score-aliases.mjs";
+import { isPlausibleMinScore } from "./score-validate.mjs";
 
 const SOURCES = [
   {
@@ -566,6 +567,8 @@ function mergeSchools(target, incoming) {
   for (const [name, years] of Object.entries(incoming)) {
     target[name] = target[name] || {};
     for (const [year, vals] of Object.entries(years)) {
+      const score = Array.isArray(vals) ? vals[0] : null;
+      if (!isPlausibleMinScore(Number(year), Number(score))) continue;
       target[name][year] = vals;
     }
   }

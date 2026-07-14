@@ -1,6 +1,7 @@
 import { drizzle } from "drizzle-orm/d1";
 import type { School, ScoreLine, AdmissionBatch, SchoolType } from "@/types/school";
 import { D1_MAX_BINDS, SCORES_QUERY_MAX_ROWS } from "@/lib/d1-limits";
+import { filterPlausibleScoreLines, isPlausibleMinScore } from "@/lib/score-validate";
 import * as schema from "./schema";
 
 function parseJsonArray<T>(value: string | null | undefined, fallback: T[] = []): T[] {
@@ -180,7 +181,7 @@ export async function querySchoolByIdD1(
 
   return rowToSchool(
     mapSchoolRow(schoolRow),
-    (lineRows || []).map(mapScoreLineRow)
+    filterPlausibleScoreLines((lineRows || []).map(mapScoreLineRow))
   );
 }
 
@@ -410,7 +411,9 @@ function mapScoreRecordRow(row: {
   max_score: number | null;
   district_rank: number | null;
   note: string | null;
-}): D1ScoreRecord {
+}): D1ScoreRecord | null {
+  // 运行时再过滤一层：D1 历史脏数据（如 min_score=1）不进入列表
+  if (!isPlausibleMinScore(row.year, row.min_score)) return null;
   return {
     schoolId: row.school_id,
     schoolName: row.school_name,
@@ -500,7 +503,9 @@ export async function queryScoreRecordsD1(
     note: string | null;
   }>();
 
-  return (results || []).map(mapScoreRecordRow);
+  return (results || [])
+    .map(mapScoreRecordRow)
+    .filter((r): r is D1ScoreRecord => r != null);
 }
 
 /** 中文名称 SQL 搜索 */
