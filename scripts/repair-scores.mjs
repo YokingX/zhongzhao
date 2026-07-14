@@ -52,8 +52,23 @@ wranglerSql(
     OR (year <= 2023 AND (min_score < 300 OR min_score > 680))`
 );
 
+// 仅回填 D1 已有学校，避免 FOREIGN KEY 失败
+const idListOut = wranglerSql(`SELECT id FROM schools`);
+const existingIds = new Set(
+  [...idListOut.matchAll(/"id"\s*:\s*"([^"]+)"/g)].map((m) => m[1])
+);
+if (existingIds.size === 0) {
+  // 兼容表格输出：每行一个 id
+  for (const line of idListOut.split("\n")) {
+    const id = line.trim();
+    if (/^[a-z]{2}-[a-z0-9]+$/i.test(id)) existingIds.add(id);
+  }
+}
+console.log(`D1 学校数：${existingIds.size}`);
+
 const values = [];
 for (const school of schools) {
+  if (!existingIds.has(school.id)) continue;
   for (const line of school.scoreLines || []) {
     if (line.batch !== "统一招生") continue;
     if (!isPlausibleMinScore(line.year, line.minScore)) continue;
