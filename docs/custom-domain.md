@@ -1,5 +1,8 @@
 # 自定义域名
 
+> 当前是否已在 Cloudflare 控制台绑定自定义域名：**未验证**（以控制台为准）。本页仅操作指南。
+> 运维核对见 [roadmap.md 的 P0-3](./roadmap.md#p0-3-运维基线可核对)。
+
 当前默认地址：`https://zhongzhao-web.zhaixiuchen.workers.dev`
 
 ## 前置条件

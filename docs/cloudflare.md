@@ -1,5 +1,7 @@
 # Cloudflare 部署
 
+概念与数据流见 [architecture.md](./architecture.md)。
+
 ## 架构
 
 D1（`zhongzhao-db`）是唯一数据库：
@@ -9,13 +11,18 @@ D1（`zhongzhao-db`）是唯一数据库：
 | 本地 D1 | `--local` | 开发、测试（`.wrangler/state/`） |
 | 远程 D1 | `--remote` | 生产（线上 Worker 绑定） |
 
-```
-Cron Worker (zhongzhao-sync)  ──抓取──▶  远程 D1（生产）
-                                              ▲
-Next.js (zhongzhao-web)       ──读取──────────┘
+Cron Sync Worker 写入远程 D1，Next.js 网站只读 D1；本地开发走 `sync:data` → 本地 D1 → `npm run dev`。完整数据流与功能地图见 [architecture.md](./architecture.md)。
 
-本地：sync:data / d1:seed → 本地 D1 → npm run dev（preview）
-```
+## 密钥与环境变量
+
+| 变量 | 用途 | 配置方式 |
+|------|------|----------|
+| `CRON_SECRET` | Sync Worker `/sync` 手动触发鉴权 | `npx wrangler secret put CRON_SECRET -c wrangler.sync.jsonc` |
+| `D1_REMOTE_CONFIRM=1` | 写入远程 D1 前必须显式确认，防止误操作 | 执行远程写入脚本时在命令前加前缀（见下方生产维护、分数修复） |
+| `ALERT_WEBHOOK_URL` | 可选：同步失败 / 数据降级 Webhook 告警 | `npx wrangler secret put ALERT_WEBHOOK_URL -c wrangler.sync.jsonc` |
+| `NEXT_PUBLIC_SITE_URL` / `SITE_URL` | SEO、sitemap、Open Graph；自定义域名见 [custom-domain.md](./custom-domain.md) | 构建 / 部署环境或 `wrangler.jsonc` vars |
+
+本地参考：根目录 [`env.example`](../env.example)（`CRON_SECRET`、`D1_REMOTE_CONFIRM`）。
 
 ## 首次设置
 
@@ -54,6 +61,22 @@ npm run d1:seed:remote
 npm run d1:stats:remote
 ```
 
+## 检查命令
+
+```bash
+npm run health:check   # 线上 / 本地健康巡检
+npm run smoke:test     # 关键页面与 API 冒烟测试
+```
+
+## 分数修复
+
+无 npm script，按需手动运行（详见 [architecture.md](./architecture.md) 数据质量流程）：
+
+```bash
+node scripts/repair-scores.mjs --local
+D1_REMOTE_CONFIRM=1 node scripts/repair-scores.mjs --remote
+```
+
 ## 定时任务（UTC）
 
 | 表达式 | 北京时间 | 说明 |
@@ -74,9 +97,6 @@ npm run d1:stats:remote
 ## 监控与告警
 
 ```bash
-# 本地巡检
-npm run health:check
-
 # 可选：同步失败 / 数据降级时 Webhook 告警
 npx wrangler secret put ALERT_WEBHOOK_URL -c wrangler.sync.jsonc
 ```

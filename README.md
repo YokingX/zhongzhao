@@ -10,11 +10,7 @@
 
 ## 数据流
 
-```
-抓取 → schools.json（中间产物）→ D1
-                                  ├─ 本地 D1：开发测试
-                                  └─ 远程 D1：线上生产
-```
+抓取 → `schools.json`（中间产物）→ D1（本地开发 / 远程生产）。详见 [docs/architecture.md](docs/architecture.md)。
 
 ## 快速开始
 
@@ -29,14 +25,21 @@ npm run dev            # 本地预览（绑定本地 D1）
 
 | 命令 | 说明 |
 |------|------|
-| `npm run dev` | 本地开发，读**本地 D1** |
 | `npm run sync:data` | 抓取 → JSON → **本地 D1** |
 | `npm run d1:seed:remote` | schools.json → **远程 D1（生产）** |
-| `npm run d1:stats` | 本地 D1 统计 |
-| `npm run d1:stats:remote` | 远程 D1 统计 |
 | `npm run deploy` | 部署网站到 Cloudflare |
 
-详见 [docs/cloudflare.md](docs/cloudflare.md)、[docs/HANDOFF.md](docs/HANDOFF.md)。
+完整脚本对照见 `package.json`；部署、D1、Cron 与监控见 [docs/cloudflare.md](docs/cloudflare.md)、[docs/HANDOFF.md](docs/HANDOFF.md)。
+
+## 文档
+
+| 文档 | 说明 |
+|------|------|
+| [docs/HANDOFF.md](docs/HANDOFF.md) | 短交接（URL、资源、高频命令） |
+| [docs/architecture.md](docs/architecture.md) | 数据流与功能地图 |
+| [docs/cloudflare.md](docs/cloudflare.md) | 部署、D1、Cron、监控与密钥 |
+| [docs/custom-domain.md](docs/custom-domain.md) | 自定义域名与 SITE_URL |
+| [docs/roadmap.md](docs/roadmap.md) | 下一步 P0 / P1 / P2 |
 
 ## 免责声明
 
