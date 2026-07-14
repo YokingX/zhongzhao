@@ -22,8 +22,8 @@
 |----|------|------|
 | D1 唯一运行时库 | `docs/HANDOFF.md`, `wrangler.jsonc` | 已上线 |
 | schools.json 中间产物 | `src/data/schools.json`, `scripts/generate-schools.mjs` | 已上线 |
-| 别名审计 | `npm run audit:aliases`, `scripts/score-aliases.mjs` | 已上线 |
-| 分数校验 | `src/lib/score-validate.ts`, `scripts/score-validate.mjs` | 已上线；有风险信号 |
+| 别名审计 | `npm run audit:aliases`, `scripts/audit-aliases.mjs`, `scripts/score-aliases.mjs` | 已上线 |
+| 分数校验 | `src/lib/score-validate.ts`, `scripts/score-validate.mjs` | 已上线；有风险信号（dea4011 / repair-scores.mjs） |
 | 分数修复脚本 | `scripts/repair-scores.mjs`（无 package.json script） | 已上线；文档未记载；有风险信号 |
 | Sync Worker | `workers/sync/index.ts`, `wrangler.sync.jsonc` | 已上线 |
 
