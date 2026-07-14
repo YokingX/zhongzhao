@@ -48,7 +48,14 @@ async function main() {
     checkEndpoint("网站 /api/health", `${SITE_URL}/api/health`),
     checkEndpoint("Sync /health", `${SYNC_URL}/health`),
     checkPage("分数线 /scores", `${SITE_URL}/scores`),
-    checkPage("分数线分页", `${SITE_URL}/scores?year=2025&batch=${encodeURIComponent("统一招生")}&page=1`),
+    checkPage(
+      "分数线分页",
+      `${SITE_URL}/scores?year=2025&batch=${encodeURIComponent("统一招生")}&page=1`
+    ),
+    checkPage(
+      "分数线海淀区",
+      `${SITE_URL}/scores?district=${encodeURIComponent("海淀")}&year=2025&batch=${encodeURIComponent("统一招生")}`
+    ),
   ]);
 
   if (results.every(Boolean)) {

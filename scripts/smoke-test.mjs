@@ -94,6 +94,8 @@ const routes = [
   "/compare?ids=hd-1yv0spl,xc-36caut,dc-354hnq",
   "/scores",
   "/scores?year=2025&batch=统一招生",
+  "/scores?district=海淀&year=2025&batch=统一招生",
+  "/scores?district=朝阳&year=2025&batch=统一招生",
   "/policies",
   "/guide",
   "/timeline",

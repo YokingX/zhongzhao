@@ -286,6 +286,35 @@ export const getDistrictSchoolCounts = cache(
   }
 );
 
+export const getDistrictScoreCounts = cache(
+  async (options: {
+    year?: number;
+    batch?: string;
+  } = {}): Promise<{ districts: { district: string; count: number }[]; total: number }> => {
+    const d1 = await getD1();
+    if (d1) {
+      const { queryDistrictScoreCountsD1 } = await import("@/db/d1-queries");
+      return queryDistrictScoreCountsD1(d1, options);
+    }
+
+    const counts = new Map<string, number>();
+    for (const school of loadSchoolsFromJson()) {
+      for (const line of school.scoreLines) {
+        if (options.year != null && line.year !== options.year) continue;
+        if (options.batch && options.batch !== "全部" && line.batch !== options.batch) {
+          continue;
+        }
+        counts.set(school.district, (counts.get(school.district) ?? 0) + 1);
+      }
+    }
+    const districts = [...counts.entries()]
+      .map(([district, count]) => ({ district, count }))
+      .sort((a, b) => a.district.localeCompare(b.district, "zh"));
+    const total = districts.reduce((sum, d) => sum + d.count, 0);
+    return { districts, total };
+  }
+);
+
 export const getSchoolsWithScores = cache(async (): Promise<number> => {
   const { withScores } = await getSchoolCounts();
   return withScores;

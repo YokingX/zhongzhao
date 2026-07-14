@@ -120,6 +120,42 @@ export async function queryDistrictSchoolCountsD1(
   return (results || []).map((r) => ({ district: r.district, count: r.count }));
 }
 
+/** 各行政区分数线记录数（可按年/批次过滤，用于分数线页网格） */
+export async function queryDistrictScoreCountsD1(
+  d1: D1Database,
+  options: { year?: number; batch?: string } = {}
+): Promise<{ districts: { district: string; count: number }[]; total: number }> {
+  let sql = `
+    SELECT s.district AS district, COUNT(*) AS count
+    FROM score_lines sl
+    JOIN schools s ON s.id = sl.school_id
+    WHERE 1=1`;
+  const binds: unknown[] = [];
+
+  if (options.year != null) {
+    sql += ` AND sl.year = ?`;
+    binds.push(options.year);
+  }
+  if (options.batch && options.batch !== "全部") {
+    sql += ` AND sl.batch = ?`;
+    binds.push(options.batch);
+  }
+
+  sql += ` GROUP BY s.district ORDER BY s.district`;
+
+  const stmt = binds.length
+    ? d1.prepare(sql).bind(...binds)
+    : d1.prepare(sql);
+  const { results } = await stmt.all<{ district: string; count: number }>();
+
+  const districts = (results || []).map((r) => ({
+    district: r.district,
+    count: r.count,
+  }));
+  const total = districts.reduce((sum, d) => sum + d.count, 0);
+  return { districts, total };
+}
+
 export async function queryScoreYearsD1(d1: D1Database): Promise<number[]> {
   const { results } = await d1
     .prepare(`SELECT DISTINCT year FROM score_lines ORDER BY year DESC`)
