@@ -68,9 +68,11 @@ npm run health:check   # 线上 / 本地健康巡检
 npm run smoke:test     # 关键页面与 API 冒烟测试
 ```
 
+GitHub Actions [`.github/workflows/health.yml`](../.github/workflows/health.yml) 每日北京时间 09:00 自动执行 `npm run health:check`（亦可 `workflow_dispatch` 手动触发）。
+
 ## 分数修复
 
-无 npm script，按需手动运行（详见 [architecture.md](./architecture.md) 数据质量流程）：
+无 npm script，按需手动运行（概念见 [architecture.md](./architecture.md)，操作见本节）：
 
 ```bash
 node scripts/repair-scores.mjs --local
