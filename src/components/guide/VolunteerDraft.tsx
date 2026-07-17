@@ -63,7 +63,7 @@ function loadSlots(key: string, n: number): VolunteerSlot[] {
       note: typeof s?.note === "string" ? s.note : "",
       schoolId: typeof s?.schoolId === "string" ? s.schoolId : undefined,
     }));
-    while (normalized.length < n) normalized.push({ school: "", note: "" });
+    while (normalized.length < n) normalized.push({ school: "", note: "", schoolId: undefined });
     return normalized;
   } catch {
     return emptySlots(n);
