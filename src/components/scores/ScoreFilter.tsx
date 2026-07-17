@@ -44,14 +44,15 @@ export function ScoreFilter({
         <select
           id="batch"
           name="batch"
-          defaultValue={currentBatch || "全部"}
+          defaultValue={currentBatch || "统一招生"}
           className="flex h-10 w-full rounded-lg border border-input bg-background px-3 py-2 text-sm"
         >
+          <option value="统一招生">统一招生（有数据）</option>
           <option value="全部">全部</option>
-          <option value="提前招生">提前招生</option>
-          <option value="指标分配">指标分配</option>
-          <option value="统一招生">统一招生</option>
+          <option value="指标分配">指标分配（站内暂少）</option>
+          <option value="提前招生">提前招生（站内暂少）</option>
         </select>
+        <p className="mt-1 text-[11px] text-muted-foreground">本站结构化分数线目前几乎全是统招线</p>
       </div>
       <div className="w-full sm:w-28">
         <label htmlFor="year" className="mb-1.5 block text-sm font-medium">

@@ -9,6 +9,31 @@ export const dynamic = "force-dynamic";
 
 const MAX_MESSAGES = 12;
 const MAX_CONTENT = 800;
+const RATE_LIMIT = 20;
+const RATE_WINDOW_MS = 60_000;
+
+type RateBucket = { count: number; resetAt: number };
+const rateBuckets = new Map<string, RateBucket>();
+
+function clientKey(request: Request): string {
+  return (
+    request.headers.get("cf-connecting-ip") ||
+    request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ||
+    "anonymous"
+  );
+}
+
+function checkRateLimit(key: string): boolean {
+  const now = Date.now();
+  const bucket = rateBuckets.get(key);
+  if (!bucket || now >= bucket.resetAt) {
+    rateBuckets.set(key, { count: 1, resetAt: now + RATE_WINDOW_MS });
+    return true;
+  }
+  if (bucket.count >= RATE_LIMIT) return false;
+  bucket.count += 1;
+  return true;
+}
 
 type ChatMessage = { role: "user" | "assistant"; content: string };
 
@@ -88,6 +113,13 @@ export async function POST(request: Request) {
   const messages = normalizeMessages(body.messages);
   if (!messages) return badRequest("请提供 messages 对话内容");
 
+  if (!checkRateLimit(clientKey(request))) {
+    return Response.json(
+      { ok: false, error: "提问太频繁，请稍等一分钟再试" },
+      { status: 429 }
+    );
+  }
+
   const lastUser = [...messages].reverse().find((m) => m.role === "user");
   if (!lastUser) return badRequest("至少需要一条用户消息");
 
@@ -155,6 +187,7 @@ function buildSuggestLinks(profile: AssistProfile) {
     { label: "填报攻略", href: "/guide" },
     { label: "常见问题", href: "/faq" },
     { label: "分数线", href: "/scores" },
+    { label: "升学日历", href: "/timeline" },
   ];
   if (profile.score && profile.score > 0) {
     const year = profile.year === 2024 ? 2024 : 2025;
@@ -166,6 +199,10 @@ function buildSuggestLinks(profile: AssistProfile) {
     links.unshift({
       label: "查看估分学校清单",
       href: `/guide/suggest?${qs.toString()}`,
+    });
+    links.splice(1, 0, {
+      label: "估分看区排",
+      href: `/rank?${qs.toString()}`,
     });
   }
   return links;

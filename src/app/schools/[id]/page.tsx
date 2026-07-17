@@ -114,6 +114,9 @@ export default async function SchoolDetailPage({ params }: PageProps) {
               <CardTitle>历年录取分数线</CardTitle>
             </CardHeader>
             <CardContent>
+              <p className="mb-3 text-xs text-muted-foreground">
+                本站以统一招生线为主；每条尽量标注来源，仍请以考试院正式发布为准。
+              </p>
               {school.scoreLines.length === 0 ? (
                 <p className="text-sm text-muted-foreground">暂无公开统招录取分数线数据</p>
               ) : (
@@ -136,6 +139,11 @@ export default async function SchoolDetailPage({ params }: PageProps) {
                           {line.districtRank && (
                             <div className="text-xs text-muted-foreground">
                               区排 {line.districtRank}
+                            </div>
+                          )}
+                          {(line.source || line.note) && (
+                            <div className="mt-0.5 max-w-[11rem] text-[11px] leading-snug text-muted-foreground">
+                              {[line.source, line.note].filter(Boolean).join(" · ")}
                             </div>
                           )}
                         </div>

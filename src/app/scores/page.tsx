@@ -172,6 +172,21 @@ export default async function ScoresPage({ searchParams }: PageProps) {
 
         <ScoreTable records={records} />
 
+        {total === 0 &&
+          (effectiveBatch === "指标分配" || effectiveBatch === "提前招生") && (
+            <p className="mt-4 rounded-lg border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-900">
+              本站目前几乎没有「{effectiveBatch}」结构化分数线。请改回「统一招生」查看校线，规则说明见
+              <Link href="/policies" className="mx-1 underline">
+                政策解读
+              </Link>
+              或
+              <Link href="/faq" className="mx-1 underline">
+                FAQ
+              </Link>
+              。
+            </p>
+          )}
+
         {totalPages > 1 && (
           <div className="mt-8 flex flex-wrap items-center justify-center gap-2">
             {page > 1 ? (

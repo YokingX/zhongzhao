@@ -8,6 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Card, CardContent } from "@/components/ui/card";
 import { BEIJING_DISTRICTS } from "@/types/school";
 import { cn } from "@/lib/utils";
+import { MarkdownMessage } from "@/components/assist/MarkdownMessage";
 
 type Role = "user" | "assistant";
 
@@ -28,17 +29,27 @@ const SUGGESTIONS = [
   "帮我看下人大附中近年统招大概多少分",
 ];
 
+const WELCOME = `## 一句话结论
+你好，我是志愿填报助手，会用好懂的分点方式回答。
+
+## 怎么做
+- 先填好上方的估分、年份、意向行政区
+- 再问我：怎么排冲稳保、某校分数线、批次规则等
+
+## 要注意
+- 回答仅供参考，以北京教育考试院官方为准
+- 本站分数线以统招为主
+
+## 下一步
+- 也可以先去 /guide 填志愿草案，或 /rank 粗估区排`;
+
 export function AssistChat() {
   const [score, setScore] = useState("480");
   const [year, setYear] = useState<"2024" | "2025">("2025");
   const [district, setDistrict] = useState("");
   const [input, setInput] = useState("");
   const [messages, setMessages] = useState<Msg[]>([
-    {
-      role: "assistant",
-      content:
-        "你好！我是志愿填报助手。先填写估分、年份和意向行政区，再问我：怎么排冲稳保、某校分数线、批次规则等。回答仅供参考，以北京教育考试院官方为准。",
-    },
+    { role: "assistant", content: WELCOME },
   ]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -95,7 +106,7 @@ export function AssistChat() {
         ...prev,
         {
           role: "assistant",
-          content: `抱歉，刚才没能完成回答：${msg}。你可以稍后再试，或先去填报攻略、分数线页自行查阅。`,
+          content: `## 一句话结论\n抱歉，刚才没能完成回答。\n\n## 要注意\n- ${msg}\n\n## 下一步\n- 稍后再试，或先去 /guide、/scores、/rank 自行查阅`,
         },
       ]);
     } finally {
@@ -180,9 +191,9 @@ export function AssistChat() {
             <div
               key={`${i}-${m.role}`}
               className={cn(
-                "max-w-[95%] rounded-2xl px-3.5 py-2.5 text-sm leading-relaxed whitespace-pre-wrap",
+                "max-w-[95%] rounded-2xl px-3.5 py-2.5 text-sm leading-relaxed",
                 m.role === "user"
-                  ? "ml-auto bg-primary text-primary-foreground"
+                  ? "ml-auto whitespace-pre-wrap bg-primary text-primary-foreground"
                   : "mr-auto bg-muted text-foreground"
               )}
             >
@@ -192,7 +203,7 @@ export function AssistChat() {
                   升学助手
                 </span>
               )}
-              {m.content}
+              {m.role === "assistant" ? <MarkdownMessage content={m.content} /> : m.content}
             </div>
           ))}
           {loading && (
@@ -214,6 +225,9 @@ export function AssistChat() {
               <Link href={l.href}>{l.label}</Link>
             </Button>
           ))}
+          <Button asChild variant="secondary" size="sm">
+            <Link href="/guide">写入志愿草案</Link>
+          </Button>
         </div>
       )}
 

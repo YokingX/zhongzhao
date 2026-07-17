@@ -17,9 +17,14 @@ const items = [
     href: "/scores",
     label: "分数线",
     icon: BarChart3,
-    match: (p: string) => p === "/scores" || p.startsWith("/scores/"),
+    match: (p: string) => p === "/scores" || p.startsWith("/scores/") || p.startsWith("/rank"),
   },
-  { href: "/guide", label: "攻略", icon: ClipboardList, match: (p: string) => p.startsWith("/guide") },
+  {
+    href: "/guide",
+    label: "攻略",
+    icon: ClipboardList,
+    match: (p: string) => p.startsWith("/guide") || p.startsWith("/timeline") || p.startsWith("/faq"),
+  },
   {
     href: "/assist",
     label: "助手",

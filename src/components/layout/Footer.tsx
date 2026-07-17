@@ -9,7 +9,9 @@ export function Footer() {
           <div>
             <h3 className="mb-2 font-semibold text-foreground">北京中考升学指导</h3>
             <p className="text-sm text-muted-foreground leading-relaxed">
-              本网站为非官方升学信息参考平台，数据来源于北京教育考试院公开信息，仅供参考，以官方发布为准。
+              本网站为非官方升学信息参考平台。分数线多为公开信息与网传统招数据交叉整理，
+              <strong className="font-medium text-foreground">不是考试院官方数据</strong>
+              ，仅供参考，以北京教育考试院当年正式发布为准。
             </p>
           </div>
           <div>
@@ -51,6 +53,26 @@ export function Footer() {
                   志愿填报攻略
                 </Link>
               </li>
+              <li>
+                <Link href="/timeline" className="text-primary hover:underline">
+                  升学日历
+                </Link>
+              </li>
+              <li>
+                <Link href="/rank" className="text-primary hover:underline">
+                  估分看区排
+                </Link>
+              </li>
+              <li>
+                <Link href="/data" className="text-primary hover:underline">
+                  数据说明
+                </Link>
+              </li>
+              <li>
+                <Link href="/feedback" className="text-primary hover:underline">
+                  反馈纠错
+                </Link>
+              </li>
             </ul>
           </div>
         </div>
@@ -63,6 +85,14 @@ export function Footer() {
             <span className="mx-2 text-border">·</span>
             <Link href="/faq" className="text-primary hover:underline">
               常见问题
+            </Link>
+            <span className="mx-2 text-border">·</span>
+            <Link href="/data" className="text-primary hover:underline">
+              数据说明
+            </Link>
+            <span className="mx-2 text-border">·</span>
+            <Link href="/feedback" className="text-primary hover:underline">
+              反馈
             </Link>
             <span className="mx-2 text-border">·</span>
             <a href="/fallback.html" className="text-primary hover:underline">

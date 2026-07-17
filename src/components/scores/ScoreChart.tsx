@@ -49,7 +49,11 @@ export function ScoreChart({ scoreLines, batch = "统一招生" }: ScoreChartPro
   const rankMin = rankValues.length > 0 ? Math.min(...rankValues) : 1;
 
   return (
-    <div className="space-y-3">
+    <div
+      className="space-y-3"
+      role="img"
+      aria-label={`${batch}历年最低录取分数线折线图，共 ${data.length} 个年份数据点`}
+    >
       {spansReform && (
         <p className="text-xs text-amber-700">
           2025 年起中考满分由 670 分调整为 510 分，折线连接仅供趋势参考，跨年请结合区排名或同一年度对比。

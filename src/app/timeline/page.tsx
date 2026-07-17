@@ -1,102 +1,99 @@
 import type { Metadata } from "next";
-import timelineData from "@/data/timeline.json";
-import { TimelineEvent } from "@/types/school";
+import Link from "next/link";
+import { Calendar } from "lucide-react";
+import { getTimelineEvents } from "@/lib/timeline-events";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Card, CardContent } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { DataDisclaimer } from "@/components/layout/DataDisclaimer";
+import { ShareLinkButton } from "@/components/layout/ShareLinkButton";
+import { SITE_URL } from "@/lib/site";
 
 export const metadata: Metadata = {
   title: "升学日历",
-  description: "2026年北京中考升学关键时间节点，包括考试、志愿填报和录取时间安排。",
+  description: "北京中考报名、考试、志愿填报与录取关键时间节点一览（参考日历）。",
 };
 
-const categoryColors: Record<string, string> = {
-  报名: "bg-gray-100 text-gray-700",
-  考试: "bg-blue-100 text-blue-700",
-  志愿: "bg-orange-100 text-orange-700",
-  录取: "bg-green-100 text-green-700",
-  其他: "bg-purple-100 text-purple-700",
+const categoryColor: Record<string, string> = {
+  报名: "bg-sky-100 text-sky-800",
+  考试: "bg-amber-100 text-amber-900",
+  志愿: "bg-emerald-100 text-emerald-900",
+  录取: "bg-violet-100 text-violet-900",
+  其他: "bg-muted text-muted-foreground",
 };
-
-function getDaysUntil(dateStr: string): number {
-  const target = new Date(dateStr);
-  const now = new Date();
-  return Math.ceil((target.getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
-}
-
-function formatDate(dateStr: string): string {
-  const date = new Date(dateStr);
-  return date.toLocaleDateString("zh-CN", {
-    year: "numeric",
-    month: "long",
-    day: "numeric",
-  });
-}
 
 export default function TimelinePage() {
-  const events = timelineData as TimelineEvent[];
-  const sortedEvents = [...events].sort(
-    (a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()
-  );
+  const events = getTimelineEvents();
+  const today = new Date();
+  const todayKey = today.toISOString().slice(0, 10);
 
   return (
     <div className="mx-auto max-w-3xl px-4 py-8">
-      <div className="mb-8">
-        <h1 className="mb-2 text-3xl font-bold">升学日历</h1>
-        <p className="text-muted-foreground">
-          2026年北京中考升学关键时间节点，帮助你合理安排备考和升学规划。
-        </p>
-      </div>
-
-      <div className="relative">
-        <div className="absolute left-4 top-0 bottom-0 w-0.5 bg-border sm:left-6" />
-
-        <div className="space-y-6">
-          {sortedEvents.map((event) => {
-            const days = getDaysUntil(event.date);
-            const isPast = days < 0;
-            const isToday = days === 0;
-
-            return (
-              <div key={event.id} className="relative flex gap-4 sm:gap-6">
-                <div
-                  className={`relative z-10 flex h-8 w-8 shrink-0 items-center justify-center rounded-full border-2 sm:h-12 sm:w-12 ${
-                    isPast
-                      ? "border-muted bg-muted text-muted-foreground"
-                      : isToday
-                      ? "border-primary bg-primary text-primary-foreground"
-                      : "border-primary bg-card text-primary"
-                  }`}
-                >
-                  <div className="h-2 w-2 rounded-full bg-current sm:h-3 sm:w-3" />
-                </div>
-
-                <Card className={`flex-1 ${isPast ? "opacity-60" : ""}`}>
-                  <CardContent className="pt-4">
-                    <div className="mb-2 flex flex-wrap items-center gap-2">
-                      <Badge className={categoryColors[event.category] || categoryColors["其他"]}>
-                        {event.category}
-                      </Badge>
-                      {isToday && <Badge variant="default">今天</Badge>}
-                      {!isPast && !isToday && days <= 30 && (
-                        <Badge variant="accent">还有{days}天</Badge>
-                      )}
-                    </div>
-                    <h3 className="mb-1 text-lg font-semibold">{event.title}</h3>
-                    <time className="mb-2 block text-sm text-primary font-medium">
-                      {formatDate(event.date)}
-                    </time>
-                    <p className="text-sm text-muted-foreground">{event.description}</p>
-                  </CardContent>
-                </Card>
-              </div>
-            );
-          })}
+      <div className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+        <div>
+          <div className="mb-2 flex items-center gap-2">
+            <Calendar className="h-7 w-7 text-primary" />
+            <h1 className="text-3xl font-bold">升学日历</h1>
+          </div>
+          <p className="text-muted-foreground">
+            2026 中招关键节点参考。正式报名、考试、填报与录取时间以北京教育考试院及本区通知为准。
+          </p>
         </div>
+        <ShareLinkButton
+          title="北京中考升学日历"
+          summary="报名、考试、志愿填报与录取关键时间"
+          url={`${SITE_URL}/timeline`}
+        />
       </div>
 
-      <div className="mt-8 rounded-lg border border-border bg-muted/50 p-4 text-sm text-muted-foreground">
-        以上时间为2026年参考安排，具体日期以北京教育考试院官方通知为准。
+      <ol className="relative space-y-4 border-l border-border pl-6">
+        {events.map((ev) => {
+          const past = ev.date < todayKey;
+          return (
+            <li key={ev.id} className="relative">
+              <span
+                className={`absolute -left-[1.625rem] top-2 h-3 w-3 rounded-full border-2 border-background ${
+                  past ? "bg-muted-foreground/40" : "bg-primary"
+                }`}
+                aria-hidden
+              />
+              <Card className={past ? "opacity-80" : undefined}>
+                <CardHeader className="pb-2">
+                  <div className="flex flex-wrap items-center gap-2">
+                    <time dateTime={ev.date} className="text-sm font-semibold text-primary">
+                      {ev.date}
+                    </time>
+                    <Badge className={`border-0 ${categoryColor[ev.category] ?? categoryColor.其他}`}>
+                      {ev.category}
+                    </Badge>
+                    {past && (
+                      <span className="text-xs text-muted-foreground">已过（参考）</span>
+                    )}
+                  </div>
+                  <CardTitle className="text-base">{ev.title}</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-sm leading-relaxed text-muted-foreground">{ev.description}</p>
+                </CardContent>
+              </Card>
+            </li>
+          );
+        })}
+      </ol>
+
+      <div className="mt-8 flex flex-wrap gap-3">
+        <Button asChild>
+          <Link href="/guide">去填报攻略</Link>
+        </Button>
+        <Button variant="outline" asChild>
+          <Link href="/assist">问 AI 助手</Link>
+        </Button>
+        <Button variant="outline" asChild>
+          <Link href="/rank">估分看区排</Link>
+        </Button>
       </div>
+
+      <DataDisclaimer className="mt-8" />
     </div>
   );
 }

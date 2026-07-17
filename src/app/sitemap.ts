@@ -18,6 +18,9 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: `${baseUrl}/guide/suggest`, lastModified: new Date(), changeFrequency: "monthly" as const, priority: 0.7 },
     { url: `${baseUrl}/assist`, lastModified: new Date(), changeFrequency: "weekly" as const, priority: 0.88 },
     { url: `${baseUrl}/timeline`, lastModified: new Date(), changeFrequency: "monthly" as const, priority: 0.7 },
+    { url: `${baseUrl}/rank`, lastModified: new Date(), changeFrequency: "monthly" as const, priority: 0.8 },
+    { url: `${baseUrl}/data`, lastModified: new Date(), changeFrequency: "monthly" as const, priority: 0.65 },
+    { url: `${baseUrl}/feedback`, lastModified: new Date(), changeFrequency: "yearly" as const, priority: 0.5 },
   ];
 
   const schoolPages = (await getAllSchools()).map((school) => ({

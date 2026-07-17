@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { School, BarChart3, BookOpen, ClipboardList, Calendar, ArrowRight, Smartphone, GitCompare, HelpCircle, MessageSquareText } from "lucide-react";
+import { School, BarChart3, BookOpen, ClipboardList, Calendar, ArrowRight, Smartphone, GitCompare, HelpCircle, MessageSquareText, TrendingUp, Database } from "lucide-react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -33,8 +33,22 @@ const quickLinks = [
     href: "/scores",
     icon: BarChart3,
     title: "分数线查询",
-    description: "历年录取分数线对比",
+    description: "历年统招录取分数线",
     color: "bg-green-50 text-green-700",
+  },
+  {
+    href: "/rank",
+    icon: TrendingUp,
+    title: "估分看区排",
+    description: "粗估分数对应区排位置",
+    color: "bg-lime-50 text-lime-700",
+  },
+  {
+    href: "/timeline",
+    icon: Calendar,
+    title: "升学日历",
+    description: "报名考试志愿关键节点",
+    color: "bg-indigo-50 text-indigo-700",
   },
   {
     href: "/policies",
@@ -63,6 +77,13 @@ const quickLinks = [
     title: "常见问题",
     description: "冲稳保、校额到校等答疑",
     color: "bg-rose-50 text-rose-700",
+  },
+  {
+    href: "/data",
+    icon: Database,
+    title: "数据说明",
+    description: "来源、更新与免责口径",
+    color: "bg-slate-50 text-slate-700",
   },
 ];
 

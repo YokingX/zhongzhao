@@ -129,7 +129,7 @@ export default async function SuggestPage({ searchParams }: PageProps) {
         <Button variant={!district ? "default" : "outline"} size="sm" asChild>
           <Link href={`/guide/suggest?score=${score}&year=${year}`}>全市</Link>
         </Button>
-        {["海淀", "西城", "东城", "朝阳", "丰台", "通州"].map((d) => (
+        {["海淀", "西城", "东城", "朝阳", "丰台", "石景山", "通州", "昌平", "大兴", "顺义", "房山", "门头沟"].map((d) => (
           <Button
             key={d}
             variant={district === d ? "default" : "outline"}
